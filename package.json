@@ -1,0 +1,14 @@
+{
+  "name": "baayat-al-ahlam",
+  "version": "1.0.0",
+  "description": "بائعة الأحلام - موقع أدبي شخصي مع لوحة تحكم كاملة",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["arabic", "poetry", "literary", "rlt"],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
