@@ -1,7 +1,11 @@
-const express = require("express");
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
+import express from "express";
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -12,140 +16,103 @@ const DATA_DIR = path.join(__dirname, "data");
 const CONTENT_FILE = path.join(DATA_DIR, "content.json");
 const MESSAGES_FILE = path.join(DATA_DIR, "messages.json");
 
+/* =========================================================
+   EXPRESS
+========================================================= */
+
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
+
 app.use(express.static(__dirname));
 
-/*
-|--------------------------------------------------------------------------
-| Admin Sessions
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   ADMIN SESSIONS
+========================================================= */
 
 const adminSessions = new Map();
+
+const SESSION_DURATION = 1000 * 60 * 60 * 12; // 12 ساعة
+
+/* =========================================================
+   HELPERS
+========================================================= */
 
 function generateId() {
   return crypto.randomBytes(12).toString("hex");
 }
 
-function generateToken() {
-  return crypto.randomBytes(32).toString("hex");
+function ensureDirectory() {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
 }
 
-/*
-|--------------------------------------------------------------------------
-| Default Content
-|--------------------------------------------------------------------------
-*/
-
-function getDefaultContent() {
+function defaultContent() {
   return {
-    settings: {
-      siteTitle: "بائعة الأحلام",
-      siteDescription: "موقع أدبي شخصي يضم الكتاب والقصائد والمقتطفات.",
-      footerText: "© بائعة الأحلام — جميع الحقوق محفوظة."
+    siteSettings: {
+      siteName: "بائعة الأحلام",
+      pageTitle: "بائعة الأحلام",
+      primaryColor: "#8B0000",
+      secondaryColor: "#D4AF37",
+      backgroundColor: "#FAF8F5",
+      textColor: "#1C1917",
+      fontFamily: "Tajawal",
+      mainFontSize: "18px"
     },
 
     home: {
       mainQuote:
         "أنا لا أكتب لأُقال إنني كتبت، بل أكتب لأن في القلب كلامًا إن لم يخرج اختنق.",
-
       introText:
-        "هذا فضاء أدبي شخصي يضم الكتاب والقصائد والمقتطفات وملامح السيرة.",
-
+        "هنا تُفتح أبواب الحنين على مهل، وتجلس القصيدة في ضوء هادئ بين كتاب قديم وقلب لا يزال يؤمن بالكلمات.",
       heroImage:
         "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=1200&auto=format&fit=crop",
-
       featuredExcerpt:
-        "في بعض الأرواح نافذةٌ صغيرة، تطل منها القصيدة كلما أغلقت الحياة أبوابها.",
-
-      style: {
-        quoteFont: "Amiri",
-        quoteSize: "28",
-        quoteColor: "#8B0000",
-        introFont: "Tajawal",
-        introSize: "18",
-        introColor: "#78716C"
-      }
+        "في بعض الأرواح نافذة صغيرة، تطل منها القصيدة كلما أغلقت الحياة أبوابها."
     },
 
     cards: {
       book: {
         title: "كتاب بائعة الأحلام",
         description:
-          "كتاب أدبي ينسج الحلم من خيوط الحنين، ويعيد ترتيب الذاكرة بلغة شاعرية دافئة.",
-
+          "رحلة أدبية تنسج الحكاية بين الحلم والذاكرة والحنين.",
         icon: "📖",
-
-        style: {
-          titleFont: "Aref Ruqaa",
-          titleSize: "28",
-          titleColor: "#8B0000",
-          textFont: "Tajawal",
-          textSize: "17",
-          textColor: "#78716C"
-        }
+        color: "#8B0000",
+        fontFamily: "Aref Ruqaa",
+        fontSize: "24px"
       },
 
       poems: {
         title: "القصائد",
-        description: "مجموعة من القصائد التي كُتبت في أوقات مختلفة من الرحلة الأدبية.",
+        description: "مجموعة القصائد والدواوين.",
         icon: "✒️",
-
-        style: {
-          titleFont: "Aref Ruqaa",
-          titleSize: "28",
-          titleColor: "#8B0000",
-          textFont: "Tajawal",
-          textSize: "17",
-          textColor: "#78716C"
-        }
+        color: "#8B0000",
+        fontFamily: "Aref Ruqaa",
+        fontSize: "24px"
       },
 
       quotes: {
         title: "مقتطفات شعرية",
-        description: "أبيات وعبارات قصيرة بقيت من القصائد والذاكرة.",
-        icon: "📝",
-
-        style: {
-          titleFont: "Aref Ruqaa",
-          titleSize: "28",
-          titleColor: "#8B0000",
-          textFont: "Tajawal",
-          textSize: "17",
-          textColor: "#78716C"
-        }
+        description: "أبيات وخواطر ومقتطفات قصيرة.",
+        icon: "❝",
+        color: "#8B0000",
+        fontFamily: "Amiri",
+        fontSize: "24px"
       }
     },
 
     book: {
-      title: "بائعة الأحلام",
-
+      title: "كتاب بائعة الأحلام",
       shortDescription:
-        "كتاب أدبي ينسج الحلم من خيوط الحنين، ويحاول أن يعيد للذاكرة أصواتًا ظننا أنها غابت.",
-
+        "كتاب أدبي ينسج الحلم من خيوط الحنين، ويعيد ترتيب الذاكرة بلغة شاعرية دافئة.",
       coverImage:
         "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=900&auto=format&fit=crop",
-
       printLink: "",
       pdfLink: "",
-
       youtubeUrl: "",
-
-      style: {
-        titleFont: "Aref Ruqaa",
-        titleSize: "34",
-        titleColor: "#8B0000",
-
-        textFont: "Amiri",
-        textSize: "21",
-        textColor: "#2a2521",
-
-        chapterTitleFont: "Aref Ruqaa",
-        chapterTitleSize: "28",
-        chapterTitleColor: "#8B0000"
-      },
-
+      textColor: "#1C1917",
+      fontFamily: "Amiri",
+      fontSize: "20px",
       chapters: []
     },
 
@@ -155,99 +122,49 @@ function getDefaultContent() {
 
     about: {
       title: "عن الكاتب",
-
       bio:
-        "كاتب وشاعر عربي، يكتب من جهة القلب، ويؤمن أن الكلمات ليست زينةً للمعنى، بل بيتٌ يسكنه الشعور.",
-
-      style: {
-        titleFont: "Aref Ruqaa",
-        titleSize: "34",
-        titleColor: "#8B0000",
-
-        textFont: "Tajawal",
-        textSize: "19",
-        textColor: "#78716C"
-      }
+        "كاتب وشاعر عربي، يكتب من جهة القلب، ويؤمن أن الكلمات ليست زينة للمعنى، بل بيت يسكنه الشعور.",
+      fontFamily: "Tajawal",
+      fontSize: "20px",
+      textColor: "#78716C"
     },
 
     contact: {
       title: "أرسل الرسالة لمشتري الأحلام",
-
       description:
-        "اكتب ما تريد، وستصل رسالتك إلى مشتري الأحلام دون إظهار هويتك.",
-
-      buttonText: "إرسال الرسالة",
-
-      successMessage: "تم إرسال رسالتك بنجاح.",
-
-      style: {
-        titleFont: "Aref Ruqaa",
-        titleSize: "34",
-        titleColor: "#8B0000",
-
-        textFont: "Tajawal",
-        textSize: "18",
-        textColor: "#78716C"
+        "إن كان لديك شيء تريد قوله، يمكنك ترك رسالتك هنا.",
+      socialLinks: {
+        facebook: "",
+        instagram: "",
+        youtube: ""
       }
-    },
-
-    social: {
-      facebook: "",
-      instagram: "",
-      youtube: ""
     }
   };
 }
 
-/*
-|--------------------------------------------------------------------------
-| Default Messages
-|--------------------------------------------------------------------------
-*/
-
-function getDefaultMessages() {
+function defaultMessages() {
   return {
     messages: [],
-    notifications: {
-      unreadMessages: 0
-    }
+    unreadCount: 0
   };
 }
 
-/*
-|--------------------------------------------------------------------------
-| File Helpers
-|--------------------------------------------------------------------------
-*/
-
-function ensureDataFiles() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-
-  if (!fs.existsSync(CONTENT_FILE)) {
-    fs.writeFileSync(
-      CONTENT_FILE,
-      JSON.stringify(getDefaultContent(), null, 2),
-      "utf8"
-    );
-  }
-
-  if (!fs.existsSync(MESSAGES_FILE)) {
-    fs.writeFileSync(
-      MESSAGES_FILE,
-      JSON.stringify(getDefaultMessages(), null, 2),
-      "utf8"
-    );
-  }
-}
-
-function readJson(filePath) {
+function readJson(filePath, fallback) {
   try {
-    return JSON.parse(fs.readFileSync(filePath, "utf8"));
+    if (!fs.existsSync(filePath)) {
+      return fallback;
+    }
+
+    const raw = fs.readFileSync(filePath, "utf8");
+
+    if (!raw.trim()) {
+      return fallback;
+    }
+
+    return JSON.parse(raw);
   } catch (error) {
-    console.error("JSON read error:", error);
-    throw new Error("تعذر قراءة البيانات");
+    console.error("JSON READ ERROR:", error);
+    return fallback;
   }
 }
 
@@ -259,13 +176,88 @@ function writeJson(filePath, data) {
   );
 }
 
-ensureDataFiles();
+function ensureDataFiles() {
+  ensureDirectory();
 
-/*
-|--------------------------------------------------------------------------
-| YouTube
-|--------------------------------------------------------------------------
-*/
+  if (!fs.existsSync(CONTENT_FILE)) {
+    writeJson(CONTENT_FILE, defaultContent());
+  }
+
+  if (!fs.existsSync(MESSAGES_FILE)) {
+    writeJson(MESSAGES_FILE, defaultMessages());
+  }
+
+  /*
+    تأمين البيانات القديمة إذا كانت موجودة
+  */
+
+  const content = readJson(CONTENT_FILE, defaultContent());
+
+  const defaults = defaultContent();
+
+  if (!content.siteSettings) {
+    content.siteSettings = defaults.siteSettings;
+  }
+
+  if (!content.home) {
+    content.home = defaults.home;
+  }
+
+  if (!content.cards) {
+    content.cards = defaults.cards;
+  }
+
+  if (!content.book) {
+    content.book = defaults.book;
+  }
+
+  if (!Array.isArray(content.book.chapters)) {
+    content.book.chapters = [];
+  }
+
+  if (!Array.isArray(content.poems)) {
+    content.poems = [];
+  }
+
+  if (!Array.isArray(content.quotes)) {
+    content.quotes = [];
+  }
+
+  if (!content.about) {
+    content.about = defaults.about;
+  }
+
+  if (!content.contact) {
+    content.contact = defaults.contact;
+  }
+
+  if (!content.contact.socialLinks) {
+    content.contact.socialLinks =
+      defaults.contact.socialLinks;
+  }
+
+  writeJson(CONTENT_FILE, content);
+
+  const messages = readJson(
+    MESSAGES_FILE,
+    defaultMessages()
+  );
+
+  if (!Array.isArray(messages.messages)) {
+    messages.messages = [];
+  }
+
+  messages.unreadCount =
+    messages.messages.filter(
+      message => message.read !== true
+    ).length;
+
+  writeJson(MESSAGES_FILE, messages);
+}
+
+/* =========================================================
+   YOUTUBE
+========================================================= */
 
 function getYouTubeEmbedUrl(url) {
   if (!url) return "";
@@ -276,29 +268,32 @@ function getYouTubeEmbedUrl(url) {
     if (parsed.hostname.includes("youtu.be")) {
       const id = parsed.pathname.replace("/", "").trim();
 
-      return id
-        ? `https://www.youtube.com/embed/${id}`
-        : "";
+      if (!id) return "";
+
+      return `https://www.youtube.com/embed/${id}`;
     }
 
-    if (parsed.hostname.includes("youtube.com")) {
-      if (parsed.pathname.includes("/embed/")) {
-        return url;
-      }
-
-      if (parsed.pathname.includes("/shorts/")) {
-        const id = parsed.pathname.split("/shorts/")[1]?.split("/")[0];
-
-        return id
-          ? `https://www.youtube.com/embed/${id}`
-          : "";
-      }
-
+    if (
+      parsed.hostname.includes("youtube.com") ||
+      parsed.hostname.includes("youtube-nocookie.com")
+    ) {
       const id = parsed.searchParams.get("v");
 
-      return id
-        ? `https://www.youtube.com/embed/${id}`
-        : "";
+      if (id) {
+        return `https://www.youtube.com/embed/${id}`;
+      }
+
+      if (parsed.pathname.startsWith("/embed/")) {
+        return `https://www.youtube.com${parsed.pathname}`;
+      }
+
+      if (parsed.pathname.startsWith("/shorts/")) {
+        const id = parsed.pathname.split("/")[2];
+
+        if (id) {
+          return `https://www.youtube.com/embed/${id}`;
+        }
+      }
     }
 
     return "";
@@ -307,37 +302,70 @@ function getYouTubeEmbedUrl(url) {
   }
 }
 
-/*
-|--------------------------------------------------------------------------
-| Admin Authentication
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   AUTH
+========================================================= */
+
+function createSession() {
+  const token = crypto.randomBytes(32).toString("hex");
+
+  adminSessions.set(token, {
+    createdAt: Date.now()
+  });
+
+  return token;
+}
+
+function isValidSession(token) {
+  if (!token) return false;
+
+  const session = adminSessions.get(token);
+
+  if (!session) return false;
+
+  if (
+    Date.now() - session.createdAt >
+    SESSION_DURATION
+  ) {
+    adminSessions.delete(token);
+    return false;
+  }
+
+  return true;
+}
 
 function requireAdmin(req, res, next) {
-  const auth = req.headers.authorization || "";
+  const authorization =
+    req.headers.authorization || "";
 
-  if (!auth.startsWith("Bearer ")) {
+  if (!authorization.startsWith("Bearer ")) {
     return res.status(401).json({
-      message: "غير مصرح"
+      message: "غير مصرح. سجل الدخول أولًا."
     });
   }
 
-  const token = auth.replace("Bearer ", "").trim();
+  const token = authorization
+    .replace("Bearer ", "")
+    .trim();
 
-  if (!token || !adminSessions.has(token)) {
+  if (!isValidSession(token)) {
     return res.status(401).json({
-      message: "جلسة الإدارة غير صالحة أو منتهية"
+      message: "انتهت جلسة الإدارة. سجل الدخول مرة أخرى."
     });
   }
 
   next();
 }
 
-/*
-|--------------------------------------------------------------------------
-| Pages
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+ensureDataFiles();
+
+/* =========================================================
+   MAIN PAGE
+========================================================= */
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
@@ -351,620 +379,590 @@ app.get("/admin.html", (req, res) => {
   res.sendFile(path.join(__dirname, "admin.html"));
 });
 
-/*
-|--------------------------------------------------------------------------
-| Public Content
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   CONTENT
+========================================================= */
 
 app.get("/api/content", (req, res) => {
   try {
-    const content = readJson(CONTENT_FILE);
+    const content = readJson(
+      CONTENT_FILE,
+      defaultContent()
+    );
 
     res.json(content);
-  } catch {
+  } catch (error) {
+    console.error(error);
+
     res.status(500).json({
-      message: "تعذر تحميل محتوى الموقع"
+      message: "تعذر تحميل محتوى الموقع."
     });
   }
 });
 
-/*
-|--------------------------------------------------------------------------
-| Contact
-|--------------------------------------------------------------------------
-*/
-
-app.post("/api/contact", (req, res) => {
-  const { message } = req.body;
-
-  if (!message || !String(message).trim()) {
-    return res.status(400).json({
-      message: "الرسالة مطلوبة"
-    });
-  }
-
-  const data = readJson(MESSAGES_FILE);
-
-  const newMessage = {
-    id: generateId(),
-
-    /*
-     * لا يتم تخزين اسم أو بريد إلكتروني.
-     * الرسالة مجهولة الهوية بالكامل.
-     */
-
-    message: String(message).trim(),
-
-    createdAt: new Date().toISOString(),
-
-    read: false
-  };
-
-  data.messages.unshift(newMessage);
-
-  if (!data.notifications) {
-    data.notifications = {
-      unreadMessages: 0
-    };
-  }
-
-  data.notifications.unreadMessages =
-    data.messages.filter(item => !item.read).length;
-
-  writeJson(MESSAGES_FILE, data);
-
-  res.json({
-    message: "تم إرسال رسالتك بنجاح."
-  });
-});
-
-/*
-|--------------------------------------------------------------------------
-| Admin Login
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   ADMIN LOGIN
+========================================================= */
 
 app.post("/api/admin/login", (req, res) => {
   const { password } = req.body;
 
   if (!ADMIN_PASSWORD) {
+    console.error(
+      "ADMIN_PASSWORD is not configured in environment variables."
+    );
+
     return res.status(500).json({
       message:
-        "متغير ADMIN_PASSWORD غير موجود في إعدادات الخادم."
+        "متغير ADMIN_PASSWORD غير موجود في إعدادات السيرفر."
     });
   }
 
   if (
     typeof password !== "string" ||
-    password !== ADMIN_PASSWORD
+    password.length === 0
   ) {
-    return res.status(401).json({
-      message: "كلمة المرور غير صحيحة"
+    return res.status(400).json({
+      message: "اكتب كلمة المرور."
     });
   }
 
-  const token = generateToken();
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(401).json({
+      message: "كلمة المرور غير صحيحة."
+    });
+  }
 
-  adminSessions.set(token, {
-    createdAt: Date.now()
-  });
+  const token = createSession();
 
   res.json({
-    message: "تم تسجيل الدخول بنجاح",
+    success: true,
+    message: "تم تسجيل الدخول بنجاح.",
     token
   });
 });
 
-/*
-|--------------------------------------------------------------------------
-| Admin Logout
-|--------------------------------------------------------------------------
-*/
-
-app.post("/api/admin/logout", requireAdmin, (req, res) => {
-  const auth = req.headers.authorization || "";
-  const token = auth.replace("Bearer ", "").trim();
-
-  adminSessions.delete(token);
-
-  res.json({
-    message: "تم تسجيل الخروج"
-  });
-});
-
-/*
-|--------------------------------------------------------------------------
-| Admin - Messages
-|--------------------------------------------------------------------------
-*/
-
-app.get(
-  "/api/admin/messages",
-  requireAdmin,
-  (req, res) => {
-    try {
-      const data = readJson(MESSAGES_FILE);
-
-      res.json(data);
-    } catch {
-      res.status(500).json({
-        message: "تعذر تحميل الرسائل"
-      });
-    }
-  }
-);
-
-/*
-|--------------------------------------------------------------------------
-| Mark Message As Read
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   ADMIN LOGOUT
+========================================================= */
 
 app.post(
-  "/api/admin/messages/:id/read",
+  "/api/admin/logout",
   requireAdmin,
   (req, res) => {
-    const data = readJson(MESSAGES_FILE);
+    const authorization =
+      req.headers.authorization || "";
 
-    const message = data.messages.find(
-      item => item.id === req.params.id
-    );
+    const token = authorization
+      .replace("Bearer ", "")
+      .trim();
 
-    if (!message) {
-      return res.status(404).json({
-        message: "الرسالة غير موجودة"
-      });
-    }
-
-    message.read = true;
-
-    data.notifications.unreadMessages =
-      data.messages.filter(item => !item.read).length;
-
-    writeJson(MESSAGES_FILE, data);
+    adminSessions.delete(token);
 
     res.json({
-      message: "تم تعليم الرسالة كمقروءة"
+      success: true,
+      message: "تم تسجيل الخروج."
     });
   }
 );
 
-/*
-|--------------------------------------------------------------------------
-| Delete Message
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   ADMIN CHECK SESSION
+========================================================= */
 
-app.delete(
-  "/api/admin/messages/:id",
+app.get(
+  "/api/admin/session",
   requireAdmin,
   (req, res) => {
-    const data = readJson(MESSAGES_FILE);
-
-    data.messages = data.messages.filter(
-      item => item.id !== req.params.id
-    );
-
-    data.notifications.unreadMessages =
-      data.messages.filter(item => !item.read).length;
-
-    writeJson(MESSAGES_FILE, data);
-
     res.json({
-      message: "تم حذف الرسالة"
+      authenticated: true
     });
   }
 );
 
-/*
-|--------------------------------------------------------------------------
-| Update Any Content Section
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   GENERIC SECTION UPDATE
+========================================================= */
 
 app.post(
   "/api/admin/update-section",
   requireAdmin,
   (req, res) => {
-    const { section, payload } = req.body;
+    try {
+      const { section, payload } = req.body;
 
-    if (!section || !payload || typeof payload !== "object") {
-      return res.status(400).json({
-        message: "بيانات غير صحيحة"
+      if (!section) {
+        return res.status(400).json({
+          message: "اسم القسم مطلوب."
+        });
+      }
+
+      if (
+        payload === null ||
+        typeof payload !== "object"
+      ) {
+        return res.status(400).json({
+          message: "بيانات القسم غير صحيحة."
+        });
+      }
+
+      const content = readJson(
+        CONTENT_FILE,
+        defaultContent()
+      );
+
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          content,
+          section
+        )
+      ) {
+        return res.status(404).json({
+          message: "القسم غير موجود."
+        });
+      }
+
+      if (
+        typeof content[section] === "object" &&
+        !Array.isArray(content[section])
+      ) {
+        content[section] = {
+          ...content[section],
+          ...payload
+        };
+      } else {
+        content[section] = payload;
+      }
+
+      writeJson(CONTENT_FILE, content);
+
+      res.json({
+        success: true,
+        message: "تم حفظ التعديلات بنجاح."
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message: "حدث خطأ أثناء حفظ التعديلات."
       });
     }
-
-    const content = readJson(CONTENT_FILE);
-
-    if (
-      !Object.prototype.hasOwnProperty.call(
-        content,
-        section
-      )
-    ) {
-      return res.status(404).json({
-        message: "القسم غير موجود"
-      });
-    }
-
-    if (
-      typeof content[section] === "object" &&
-      !Array.isArray(content[section])
-    ) {
-      content[section] = {
-        ...content[section],
-        ...payload
-      };
-    } else {
-      content[section] = payload;
-    }
-
-    writeJson(CONTENT_FILE, content);
-
-    res.json({
-      message: "تم حفظ التعديلات"
-    });
   }
 );
 
-/*
-|--------------------------------------------------------------------------
-| Update Cards
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   SITE SETTINGS
+========================================================= */
 
 app.post(
-  "/api/admin/cards/:card",
+  "/api/admin/settings",
   requireAdmin,
   (req, res) => {
-    const { card } = req.params;
+    try {
+      const content = readJson(
+        CONTENT_FILE,
+        defaultContent()
+      );
 
-    const allowed = [
-      "book",
-      "poems",
-      "quotes"
-    ];
+      content.siteSettings = {
+        ...content.siteSettings,
+        ...req.body
+      };
 
-    if (!allowed.includes(card)) {
-      return res.status(400).json({
-        message: "البطاقة غير صحيحة"
+      writeJson(CONTENT_FILE, content);
+
+      res.json({
+        success: true,
+        message: "تم حفظ إعدادات الموقع."
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message: "تعذر حفظ إعدادات الموقع."
       });
     }
+  }
+);
 
-    const content = readJson(CONTENT_FILE);
+/* =========================================================
+   HOME
+========================================================= */
 
-    content.cards[card] = {
-      ...content.cards[card],
-      ...req.body
-    };
+app.post(
+  "/api/admin/home",
+  requireAdmin,
+  (req, res) => {
+    try {
+      const content = readJson(
+        CONTENT_FILE,
+        defaultContent()
+      );
 
-    writeJson(CONTENT_FILE, content);
+      content.home = {
+        ...content.home,
+        ...req.body
+      };
+
+      writeJson(CONTENT_FILE, content);
+
+      res.json({
+        success: true,
+        message:
+          "تم حفظ إعدادات الصفحة الرئيسية."
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message: "تعذر حفظ الصفحة الرئيسية."
+      });
+    }
+  }
+);
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+app.post(
+  "/api/admin/cards",
+  requireAdmin,
+  (req, res) => {
+    try {
+      const { card, payload } = req.body;
+
+      const allowedCards = [
+        "book",
+        "poems",
+        "quotes"
+      ];
+
+      if (!allowedCards.includes(card)) {
+        return res.status(400).json({
+          message: "نوع البطاقة غير صحيح."
+        });
+      }
+
+      const content = readJson(
+        CONTENT_FILE,
+        defaultContent()
+      );
+
+      content.cards[card] = {
+        ...content.cards[card],
+        ...payload
+      };
+
+      writeJson(CONTENT_FILE, content);
+
+      res.json({
+        success: true,
+        message: "تم حفظ البطاقة."
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message: "تعذر حفظ البطاقة."
+      });
+    }
+  }
+);
+
+/* =========================================================
+   BOOK
+========================================================= */
+
+app.post(
+  "/api/admin/book",
+  requireAdmin,
+  (req, res) => {
+    try {
+      const content = readJson(
+        CONTENT_FILE,
+        defaultContent()
+      );
+
+      const bookData = {
+        ...req.body
+      };
+
+      if (bookData.youtubeUrl) {
+        bookData.youtubeEmbedUrl =
+          getYouTubeEmbedUrl(
+            bookData.youtubeUrl
+          );
+      } else {
+        bookData.youtubeEmbedUrl = "";
+      }
+
+      content.book = {
+        ...content.book,
+        ...bookData
+      };
+
+      if (!Array.isArray(content.book.chapters)) {
+        content.book.chapters = [];
+      }
+
+      writeJson(CONTENT_FILE, content);
+
+      res.json({
+        success: true,
+        message: "تم حفظ بيانات الكتاب."
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message: "تعذر حفظ بيانات الكتاب."
+      });
+    }
+  }
+);
+
+/* =========================================================
+   BOOK CHAPTERS - GET
+========================================================= */
+
+app.get(
+  "/api/admin/book/chapters",
+  requireAdmin,
+  (req, res) => {
+    const content = readJson(
+      CONTENT_FILE,
+      defaultContent()
+    );
 
     res.json({
-      message: "تم حفظ البطاقة"
+      chapters: content.book?.chapters || []
     });
   }
 );
 
-/*
-|--------------------------------------------------------------------------
-| Book Chapters
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   BOOK CHAPTERS - ADD / UPDATE
+========================================================= */
 
 app.post(
   "/api/admin/book/chapters",
   requireAdmin,
   (req, res) => {
-    const {
-      id,
-      title,
-      content: chapterContent,
-      youtubeUrl
-    } = req.body;
+    try {
+      const {
+        id,
+        title,
+        number,
+        content: chapterContent,
+        fontFamily,
+        fontSize,
+        textColor,
+        youtubeUrl
+      } = req.body;
 
-    if (!title || !chapterContent) {
-      return res.status(400).json({
-        message: "عنوان الفصل والنص مطلوبان"
-      });
-    }
-
-    const db = readJson(CONTENT_FILE);
-
-    if (!Array.isArray(db.book.chapters)) {
-      db.book.chapters = [];
-    }
-
-    const chapter = {
-      title: String(title).trim(),
-
-      content: String(chapterContent),
-
-      youtubeUrl: youtubeUrl
-        ? String(youtubeUrl).trim()
-        : "",
-
-      embedUrl: getYouTubeEmbedUrl(youtubeUrl),
-
-      updatedAt: new Date().toISOString()
-    };
-
-    if (id) {
-      const index = db.book.chapters.findIndex(
-        item => item.id === id
-      );
-
-      if (index === -1) {
-        return res.status(404).json({
-          message: "الفصل غير موجود"
+      if (!title || !chapterContent) {
+        return res.status(400).json({
+          message:
+            "عنوان الفصل ونص الفصل مطلوبان."
         });
       }
 
-      db.book.chapters[index] = {
-        ...db.book.chapters[index],
-        ...chapter
+      const db = readJson(
+        CONTENT_FILE,
+        defaultContent()
+      );
+
+      if (!Array.isArray(db.book.chapters)) {
+        db.book.chapters = [];
+      }
+
+      const chapter = {
+        title,
+        number:
+          number !== undefined &&
+          number !== null &&
+          number !== ""
+            ? Number(number)
+            : db.book.chapters.length + 1,
+
+        content: chapterContent,
+
+        fontFamily:
+          fontFamily || "Amiri",
+
+        fontSize:
+          fontSize || "20px",
+
+        textColor:
+          textColor || "#1C1917",
+
+        youtubeUrl:
+          youtubeUrl || "",
+
+        youtubeEmbedUrl:
+          getYouTubeEmbedUrl(
+            youtubeUrl || ""
+          )
       };
-    } else {
-      db.book.chapters.push({
-        id: generateId(),
-        ...chapter
+
+      if (id) {
+        const index =
+          db.book.chapters.findIndex(
+            chapter => chapter.id === id
+          );
+
+        if (index === -1) {
+          return res.status(404).json({
+            message: "الفصل غير موجود."
+          });
+        }
+
+        db.book.chapters[index] = {
+          ...db.book.chapters[index],
+          ...chapter,
+          id
+        };
+      } else {
+        db.book.chapters.unshift({
+          id: generateId(),
+          ...chapter
+        });
+      }
+
+      writeJson(CONTENT_FILE, db);
+
+      res.json({
+        success: true,
+        message: "تم حفظ الفصل بنجاح.",
+        chapters: db.book.chapters
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message: "حدث خطأ أثناء حفظ الفصل."
       });
     }
-
-    writeJson(CONTENT_FILE, db);
-
-    res.json({
-      message: "تم حفظ الفصل بنجاح"
-    });
   }
 );
 
-/*
-|--------------------------------------------------------------------------
-| Delete Chapter
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   BOOK CHAPTER DELETE
+========================================================= */
 
 app.delete(
   "/api/admin/book/chapters/:id",
   requireAdmin,
   (req, res) => {
-    const db = readJson(CONTENT_FILE);
+    try {
+      const db = readJson(
+        CONTENT_FILE,
+        defaultContent()
+      );
 
-    db.book.chapters = (
-      db.book.chapters || []
-    ).filter(
-      chapter => chapter.id !== req.params.id
-    );
+      const oldLength =
+        db.book.chapters.length;
 
-    writeJson(CONTENT_FILE, db);
+      db.book.chapters =
+        db.book.chapters.filter(
+          chapter =>
+            chapter.id !== req.params.id
+        );
 
-    res.json({
-      message: "تم حذف الفصل"
-    });
-  }
-);
+      if (
+        db.book.chapters.length === oldLength
+      ) {
+        return res.status(404).json({
+          message: "الفصل غير موجود."
+        });
+      }
 
-/*
-|--------------------------------------------------------------------------
-| Reorder Chapters
-|--------------------------------------------------------------------------
-*/
+      writeJson(CONTENT_FILE, db);
 
-app.post(
-  "/api/admin/book/chapters/reorder",
-  requireAdmin,
-  (req, res) => {
-    const { ids } = req.body;
+      res.json({
+        success: true,
+        message: "تم حذف الفصل."
+      });
+    } catch (error) {
+      console.error(error);
 
-    if (!Array.isArray(ids)) {
-      return res.status(400).json({
-        message: "ترتيب غير صحيح"
+      res.status(500).json({
+        message: "تعذر حذف الفصل."
       });
     }
+  }
+);
 
-    const db = readJson(CONTENT_FILE);
+/* =========================================================
+   POEMS - GET
+========================================================= */
 
-    const chapters = db.book.chapters || [];
-
-    const reordered = ids
-      .map(id =>
-        chapters.find(chapter => chapter.id === id)
-      )
-      .filter(Boolean);
-
-    db.book.chapters = reordered;
-
-    writeJson(CONTENT_FILE, db);
+app.get(
+  "/api/admin/poems",
+  requireAdmin,
+  (req, res) => {
+    const db = readJson(
+      CONTENT_FILE,
+      defaultContent()
+    );
 
     res.json({
-      message: "تم حفظ ترتيب الفصول"
+      poems: db.poems || []
     });
   }
 );
 
-/*
-|--------------------------------------------------------------------------
-| Poems
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   POEMS - ADD / UPDATE
+========================================================= */
 
 app.post(
   "/api/admin/poems",
   requireAdmin,
   (req, res) => {
-    const {
-      id,
-      title,
-      type,
-      reason,
-      content: poemContent,
-      font,
-      fontSize,
-      color
-    } = req.body;
+    try {
+      const {
+        id,
+        title,
+        type,
+        motivation,
+        content,
+        fontFamily,
+        fontSize,
+        textColor,
+        titleColor,
+        lineHeight,
+        textAlign
+      } = req.body;
 
-    if (!title || !poemContent) {
-      return res.status(400).json({
-        message: "اسم القصيدة والنص مطلوبان"
-      });
-    }
-
-    const db = readJson(CONTENT_FILE);
-
-    if (!Array.isArray(db.poems)) {
-      db.poems = [];
-    }
-
-    const poem = {
-      title: String(title).trim(),
-
-      type:
-        type === "عمودي"
-          ? "عمودي"
-          : "حر",
-
-      reason: reason
-        ? String(reason)
-        : "",
-
-      content: String(poemContent),
-
-      style: {
-        font: font || "Amiri",
-        fontSize: fontSize || "24",
-        color: color || "#2a2521"
-      },
-
-      updatedAt: new Date().toISOString()
-    };
-
-    if (id) {
-      const index = db.poems.findIndex(
-        poem => poem.id === id
-      );
-
-      if (index === -1) {
-        return res.status(404).json({
-          message: "القصيدة غير موجودة"
+      if (!title || !content) {
+        return res.status(400).json({
+          message:
+            "اسم القصيدة ونص القصيدة مطلوبان."
         });
       }
 
-      db.poems[index] = {
-        ...db.poems[index],
-        ...poem
-      };
-    } else {
-      db.poems.unshift({
-        id: generateId(),
-        ...poem
-      });
-    }
-
-    writeJson(CONTENT_FILE, db);
-
-    res.json({
-      message: "تم حفظ القصيدة بنجاح"
-    });
-  }
-);
-
-/*
-|--------------------------------------------------------------------------
-| Delete Poem
-|--------------------------------------------------------------------------
-*/
-
-app.delete(
-  "/api/admin/poems/:id",
-  requireAdmin,
-  (req, res) => {
-    const db = readJson(CONTENT_FILE);
-
-    db.poems = (
-      db.poems || []
-    ).filter(
-      poem => poem.id !== req.params.id
-    );
-
-    writeJson(CONTENT_FILE, db);
-
-    res.json({
-      message: "تم حذف القصيدة"
-    });
-  }
-);
-
-/*
-|--------------------------------------------------------------------------
-| Quotes
-|--------------------------------------------------------------------------
-*/
-
-app.post(
-  "/api/admin/quotes",
-  requireAdmin,
-  (req, res) => {
-    const {
-      id,
-      title,
-      text,
-      font,
-      fontSize,
-      color
-    } = req.body;
-
-    if (!text) {
-      return res.status(400).json({
-        message: "نص المقتطف مطلوب"
-      });
-    }
-
-    const db = readJson(CONTENT_FILE);
-
-    if (!Array.isArray(db.quotes)) {
-      db.quotes = [];
-    }
-
-    const quote = {
-      title: title || "مقتطف شعري",
-
-      text: String(text),
-
-      style: {
-        font: font || "Amiri",
-        fontSize: fontSize || "24",
-        color: color || "#2a2521"
-      },
-
-      updatedAt: new Date().toISOString()
-    };
-
-    if (id) {
-      const index = db.quotes.findIndex(
-        quote => quote.id === id
+      const db = readJson(
+        CONTENT_FILE,
+        defaultContent()
       );
 
-      if (index === -1) {
-        return res.status(404).json({
-          message: "المقتطف غير موجود"
-        });
+      if (!Array.isArray(db.poems)) {
+        db.poems = [];
       }
 
-      db.quotes[index] = {
-        ...db.quotes[index],
-        ...quote
-      };
-    } else {
-      db.quotes.unshift({
-        id: generateId(),
-        ...quote
-      });
-    }
+      const poem = {
+        title,
+        type:
+          type === "حر"
+            ? "حر"
+            : "عمودي",
 
-    writeJson(CONTENT_FILE, db);
+        motivation:
+          motivation || "",
 
-    res.json({
-      message: "تم حفظ المقتطف"
-    }
+        content,
+
+        fontFamily:
+          f
