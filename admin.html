@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة تحكم بائعة الأحلام</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@200..1000&family=Tajawal:wght@200;300;400;500;700;800;900&family=Reem+Kufi:wght@400..700&family=Lemonada:wght@300..700&family=Changa:wght@200..800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #FAF8F5;
+      --text: #1C1917;
+      --primary: #8B0000;
+      --gold: #D4AF37;
+      --muted: #78716C;
+      --card: #fffdf9;
+      --border: #e7dfd4;
+      --shadow: 0 10px 30px rgba(28,25,23,0.08);
+      --radius: 18px;
+      --container: 1240px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Tajawal", sans-serif;
+      line-height: 1.8;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(94%, var(--container));
+      margin: auto;
+    }
+
+    .topbar {
+      background: rgba(250,248,245,0.95);
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      font-family: "Aref Ruqaa", serif;
+      color: var(--primary);
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: .2s;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-outline { border: 1px solid var(--primary); background: transparent; color: var(--primary); }
+    .btn-danger { background: #b91c1c; color: #fff; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 24px;
+      padding: 30px 0 60px;
+    }
+
+    .sidebar, .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar {
+      padding: 22px;
+      height: fit-content;
+      position: sticky;
+      top: 90px;
+    }
+
+    .side-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .side-menu button {
+      border: 0;
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 14px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      text-align: right;
+      font-weight: 700;
+    }
+
+    .side-menu button.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .section-title {
+      font-family: "Aref Ruqaa", serif;
+      color: var(--primary);
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .section-subtitle {
+      color: var(--muted);
+      margin-bottom: 22px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .status {
+      margin: 14px 0 18px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .items-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .item {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .item h4 {
+      color: var(--primary);
+      margin-bottom: 8px;
+      font-family: "Amiri", serif;
+      font-size: 1.4rem;
+    }
+
+    .item p {
+      color: var(--muted);
+      white-space: pre-line;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .small {
+      font-size: .94rem;
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .login-box {
+      max-width: 460px;
+      margin: 70px auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: static;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loginView" class="login-box">
+    <h1 class="section-title">دخول لوحة التحكم</h1>
+    <p class="section-subtitle">لوحة إدارة خاصة بموقع بائعة الأحلام</p>
+
+    <div class="form-group">
+      <label for="adminPassword">كلمة المرور</label>
+      <input type="password" id="adminPassword" placeholder="اكتب كلمة المرور" />
+    </div>
+
+    <button class="btn btn-primary" onclick="login()">دخول</button>
+    <p id="loginStatus" class="status"></p>
+  </div>
+
+  <div id="adminApp" class="hidden">
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand">لوحة تحكم بائعة الأحلام</div>
+        <div class="nav-links">
+          <a href="/index.html" target="_blank">عرض الموقع</a>
+          <button class="btn btn-outline" onclick="logout()">تسجيل خروج</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="container layout">
+      <aside class="sidebar">
+        <div class="side-menu">
+          <button class="active" data-section="homeSection">إدارة الرئيسية</button>
+          <button data-section="bookSection">إدارة الكتاب</button>
+          <button data-section="poemsSection">إدارة القصائد</button>
+          <button data-section="quotesSection">إدارة المقتطفات</button>
+          <button data-section="aboutSection">إدارة عن الكاتب</button>
+          <button data-section="mediaSection">الوسائط والفيديو</button>
+          <button data-section="messagesSection">رسائل القراء</button>
+        </div>
+      </aside>
+
+      <main class="panel">
+        <section id="homeSection" class="section active">
+          <h2 class="section-title">إدارة الصفحة الرئيسية</h2>
+          <p class="section-subtitle">تحديث الاقتباس الرئيسي وصورة الغلاف ومقتطف اليوم.</p>
+
+          <div class="card">
+            <div class="form-group">
+              <label>الاقتباس الرئيسي</label>
+              <textarea id="homeMainQuote"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>النص التعريفي القصير</label>
+              <textarea id="homeIntroText"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>رابط صورة الغلاف الشاعري</label>
+              <input id="homeHeroImage" type="text" />
+            </div>
+
+            <div class="form-group">
+              <label>مقتطف اليوم</label>
+              <textarea id="homeFeaturedExcerpt"></textarea>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveHome()">حفظ التعديلات</button>
+            <p id="homeStatus" class="status"></p>
+          </div>
+        </section>
+
+        <section id="bookSection" class="section">
+          <h2 class="section-title">إدارة الكتاب</h2>
+          <p class="section-subtitle">تعديل نبذة الكتاب وروابط الشراء وملف الـ PDF.</p>
+
+          <div class="card">
+            <div class="grid-2">
+              <div class="form-group">
+                <label>عنوان الكتاب</label>
+                <input id="bookTitle" type="text" />
+              </div>
+
+              <div class="form-group">
+                <label>رابط غلاف الكتاب</label>
+                <input id="bookCoverImage" type="text" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>نبذة الكتاب</label>
+              <textarea id="bookDescription"></textarea>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label>رابط النسخة الورقية</label>
+                <input id="bookPrintLink" type="text" />
+              </div>
+
+              <div class="form-group">
+                <label>رابط PDF / النسخة الإلكترونية</label>
+                <input id="bookPdfLink" type="text" />
+              </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveBook()">حفظ التعديلات</button>
+            <p id="bookStatus" class="status"></p>
+          </div>
+        </section>
+
+        <section id="poemsSection" class="section">
+          <h2 class="section-title">إدارة الدواوين والقصائد</h2>
+          <p class="section-subtitle">إضافة وتعديل وحذف القصائد مع اختيار خط خاص لكل قصيدة.</p>
+
+          <div class="card">
+            <input type="hidden" id="poemId" />
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label>عنوان القصيدة</label>
+                <input id="poemTitle" type="text" />
+              </div>
+
+              <div class="form-group">
+                <label>التصنيف</label>
+                <select id="poemCategory">
+                  <option value="عمودي">عمودي</option>
+                  <option value="حر">حر / تفعيلة</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label>رقم الديوان</label>
+                <input id="poemCollectionNumber" type="number" />
+              </div>
+
+              <div class="form-group">
+                <label>الخط المستخدم</label>
+                <select id="poemFont">
+                  <option>Amiri</option>
+                  <option>Aref Ruqaa</option>
+                  <option>Reem Kufi</option>
+                  <option>Tajawal</option>
+                  <option>Cairo</option>
+                  <option>Scheherazade New</option>
+                  <option>Changa</option>
+                  <option>Lemonada</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>نص البيت الأول / المعاينة</label>
+              <textarea id="poemFirstVerse"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>النص الكامل للقصيدة</label>
+              <textarea id="poemContent" style="min-height:220px;"></textarea>
+            </div>
+
+            <div class="item-actions">
+              <button class="btn btn-primary" onclick="savePoem()">حفظ القصيدة</button>
+              <button class="btn btn-outline" onclick="resetPoemForm()">تفريغ النموذج</button>
+            </div>
+            <p id="poemStatus" class="status"></p>
+          </div>
+
+          <div class="card">
+            <h3 class="section-title" style="font-size:1.6rem">كل القصائد</h3>
+            <div id="poemsList" class="items-list"></div>
+          </div>
+        </section>
+
+        <section id="quotesSection" class="section">
+          <h2 class="section-title">إدارة المقتطفات</h2>
+          <p class="section-subtitle">إضافة أبيات قصيرة أو خواطر للعرض كبطاقات.</p>
+
+          <div class="card">
+            <input type="hidden" id="quoteId" />
+
+            <div class="form-group">
+              <label>عنوان المقتطف</label>
+              <input id="quoteTitle" type="text" />
+            </div>
+
+            <div class="form-group">
+              <label>النص</label>
+              <textarea id="quoteText" style="min-height:180px;"></textarea>
+            </div>
+
+            <div class="item-actions">
+              <button class="btn btn-primary" onclick="saveQuote()">حفظ المقتطف</button>
+              <button class="btn btn-outline" onclick="resetQuoteForm()">تفريغ النموذج</button>
+            </div>
+
+            <p id="quoteStatus" class="status"></p>
+          </div>
+
+          <div class="card">
+            <h3 class="section-title" style="font-size:1.6rem">كل المقتطفات</h3>
+            <div id="quotesList" class="items-list"></div>
+          </div>
+        </section>
+
+        <section id="aboutSection" class="section">
+          <h2 class="section-title">إدارة عن الكاتب</h2>
+          <p class="section-subtitle">تحديث السيرة الأدبية والنصوص التعريفية.</p>
+
+          <div class="card">
+            <div class="form-group">
+              <label>السيرة الأدبية</label>
+              <textarea id="aboutBio" style="min-height:260px;"></textarea>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveAbout()">حفظ السيرة</button>
+            <p id="aboutStatus" class="status"></p>
+          </div>
+        </section>
+
+        <section id="mediaSection" class="section">
+          <h2 class="section-title">الوسائط ورفع الروابط</h2>
+          <p class="section-subtitle">إضافة صور أو فيديوهات يوتيوب قابلة للعرض داخل الموقع.</p>
+
+          <div class="card">
+            <input type="hidden" id="mediaId" />
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label>العنوان</label>
+                <input id="mediaTitle" type="text" />
+              </div>
+
+              <div class="form-group">
+                <label>النوع</label>
+                <select id="mediaType">
+                  <option value="image">صورة</option>
+                  <option value="youtube">فيديو يوتيوب</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>الرابط</label>
+              <input id="mediaUrl" type="text" placeholder="رابط صورة أو رابط فيديو يوتيوب" />
+            </div>
+
+            <div class="item-actions">
+              <button class="btn btn-primary" onclick="saveMedia()">حفظ الوسيط</button>
+              <button class="btn btn-outline" onclick="resetMediaForm()">تفريغ النموذج</button>
+            </div>
+
+            <p id="mediaStatus" class="status"></p>
+          </div>
+
+          <div class="card">
+            <h3 class="section-title" style="font-size:1.6rem">كل الوسائط</h3>
+            <div id="mediaList" class="items-list"></div>
+          </div>
+
+          <div class="card">
+            <h3 class="section-title" style="font-size:1.6rem">روابط التواصل الاجتماعي</h3>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label>فيسبوك</label>
+                <input id="socialFacebook" type="text" />
+              </div>
+
+              <div class="form-group">
+                <label>إنستجرام</label>
+                <input id="socialInstagram" type="text" />
+              </div>
+
+              <div class="form-group">
+                <label>يوتيوب</label>
+                <input id="socialYoutube" type="text" />
+              </div>
+
+              <div class="form-group">
+                <label>إكس</label>
+                <input id="socialX" type="text" />
+              </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveSocials()">حفظ الروابط</button>
+            <p id="socialStatus" class="status"></p>
+          </div>
+        </section>
+
+        <section id="messagesSection" class="section">
+          <h2 class="section-title">رسائل القراء والاشتراكات</h2>
+          <p class="section-subtitle">مراجعة الرسائل الواردة وبيانات النشرة البريدية.</p>
+
+          <div class="card">
+            <h3 class="section-title" style="font-size:1.5rem">الرسائل</h3>
+            <div id="messagesList" class="items-list"></div>
+          </div>
+
+          <div class="card">
+            <h3 class="section-title" style="font-size:1.5rem">النشرة البريدية</h3>
+            <div id="newsletterList" class="items-list"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    let token = localStorage.getItem('adminToken') || '';
+    let contentData = null;
+
+    function showAdmin() {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('adminApp').classList.remove('hidden');
+      loadContent();
+      loadMessages();
+    }
+
+    function showLogin() {
+      document.getElementById('adminApp').classList.add('hidden');
+      document.getElementById('loginView').classList.remove('hidden');
+    }
+
+    async function login() {
+      const password = document.getElementById('adminPassword').value;
+      const status = document.getElementById('loginStatus');
+      status.textContent = 'جاري التحقق...';
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          status.textContent = data.message || 'فشل تسجيل الدخول';
+          return;
+        }
+
+        token = data.token;
+        localStorage.setItem('adminToken', token);
+        status.textContent = 'تم تسجيل الدخول';
+        showAdmin();
+      } catch (err) {
+        status.textContent = 'حدث خطأ أثناء تسجيل الدخول';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('adminToken');
+      token = '';
+      showLogin();
+    }
+
+    function authHeaders() {
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      };
+    }
+
+    async function loadContent() {
+      const res = await fetch('/api/content');
+      contentData = await res.json();
+      fillForms();
+      renderPoemsList();
+      renderQuotesList();
+      renderMediaList();
+    }
+
+    async function loadMessages() {
+      try {
+        const res = await fetch('/api/admin/messages', { headers: authHeaders() });
+        const data = await res.json();
+
+        const messages = data.messages || [];
+        const newsletter = data.newsletter || [];
+
+        document.getElementById('messagesList').innerHTML = messages.length
+          ? messages.map(msg => `
+            <div class="item">
+              <div class="small">${new Date(msg.createdAt).toLocaleString('ar-EG')}</div>
+              <h4>${escapeHtml(msg.name)}</h4>
+              <p>البريد: ${escapeHtml(msg.email)}</p>
+              <p>${escapeHtml(msg.message)}</p>
+            </div>
+          `).join('')
+          : '<div class="item"><p>لا توجد رسائل حتى الآن.</p></div>';
+
+        document.getElementById('newsletterList').innerHTML = newsletter.length
+          ? newsletter.map(item => `
+            <div class="item">
+              <div class="small">${new Date(item.createdAt).toLocaleString('ar-EG')}</div>
+              <p>${escapeHtml(item.email)}</p>
+            </div>
+          `).join('')
+          : '<div class="item"><p>لا توجد اشتراكات بعد.</p></div>';
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function fillForms() {
+      const home = contentData.home || {};
+      const book = contentData.book || {};
+      const about = contentData.about || {};
+      const socials = (contentData.contact && contentData.contact.socials) || {};
+
+      document.getElementById('homeMainQuote').value = home.mainQuote || '';
+      document.getElementById('homeIntroText').value = 
