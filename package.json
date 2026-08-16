@@ -1,0 +1,23 @@
+{
+  "name": "baeaat-al-ahlam",
+  "version": "1.0.0",
+  "description": "موقع بائعة الأحلام مع لوحة تحكم وإدارة محتوى",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "arabic",
+    "literary",
+    "cms",
+    "poetry",
+    "express"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
+
