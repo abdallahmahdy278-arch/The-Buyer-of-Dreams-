@@ -200,7 +200,7 @@
 
     .status {
       margin: 14px 0 18px;
-      color: var(--muted);
+      color: var(--primary);
       font-weight: 700;
     }
 
@@ -297,13 +297,13 @@
     <div class="container layout">
       <aside class="sidebar">
         <div class="side-menu">
-          <button class="active" data-section="homeSection">إدارة الرئيسية</button>
-          <button data-section="bookSection">إدارة الكتاب</button>
-          <button data-section="poemsSection">إدارة القصائد</button>
-          <button data-section="quotesSection">إدارة المقتطفات</button>
-          <button data-section="aboutSection">إدارة عن الكاتب</button>
-          <button data-section="mediaSection">الوسائط والفيديو</button>
-          <button data-section="messagesSection">رسائل القراء</button>
+          <button class="active" onclick="switchSection('homeSection', this)">إدارة الرئيسية</button>
+          <button onclick="switchSection('bookSection', this)">إدارة الكتاب</button>
+          <button onclick="switchSection('poemsSection', this)">إدارة القصائد</button>
+          <button onclick="switchSection('quotesSection', this)">إدارة المقتطفات</button>
+          <button onclick="switchSection('aboutSection', this)">إدارة عن الكاتب</button>
+          <button onclick="switchSection('mediaSection', this)">الوسائط والفيديو</button>
+          <button onclick="switchSection('messagesSection', this)">رسائل القراء</button>
         </div>
       </aside>
 
@@ -581,6 +581,14 @@
     let token = localStorage.getItem('adminToken') || '';
     let contentData = null;
 
+    document.addEventListener('DOMContentLoaded', () => {
+      if (token) {
+        showAdmin();
+      } else {
+        showLogin();
+      }
+    });
+
     function showAdmin() {
       document.getElementById('loginView').classList.add('hidden');
       document.getElementById('adminApp').classList.remove('hidden');
@@ -591,6 +599,14 @@
     function showLogin() {
       document.getElementById('adminApp').classList.add('hidden');
       document.getElementById('loginView').classList.remove('hidden');
+    }
+
+    function switchSection(sectionId, btnElement) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.side-menu button').forEach(btn => btn.classList.remove('active'));
+      
+      document.getElementById(sectionId).classList.add('active');
+      btnElement.classList.add('active');
     }
 
     async function login() {
@@ -614,10 +630,10 @@
 
         token = data.token;
         localStorage.setItem('adminToken', token);
-        status.textContent = 'تم تسجيل الدخول';
+        status.textContent = 'تم تسجيل الدخول بنجاح';
         showAdmin();
       } catch (err) {
-        status.textContent = 'حدث خطأ أثناء تسجيل الدخول';
+        status.textContent = 'حدث خطأ أثناء الاتصال بالخادم';
       }
     }
 
@@ -635,17 +651,22 @@
     }
 
     async function loadContent() {
-      const res = await fetch('/api/content');
-      contentData = await res.json();
-      fillForms();
-      renderPoemsList();
-      renderQuotesList();
-      renderMediaList();
+      try {
+        const res = await fetch('/api/content');
+        contentData = await res.json();
+        fillForms();
+        renderPoemsList();
+        renderQuotesList();
+        renderMediaList();
+      } catch (err) {
+        console.error('خطأ في تحميل المحتوى:', err);
+      }
     }
 
     async function loadMessages() {
       try {
         const res = await fetch('/api/admin/messages', { headers: authHeaders() });
+        if (!res.ok) return;
         const data = await res.json();
 
         const messages = data.messages || [];
@@ -662,24 +683,4 @@
           `).join('')
           : '<div class="item"><p>لا توجد رسائل حتى الآن.</p></div>';
 
-        document.getElementById('newsletterList').innerHTML = newsletter.length
-          ? newsletter.map(item => `
-            <div class="item">
-              <div class="small">${new Date(item.createdAt).toLocaleString('ar-EG')}</div>
-              <p>${escapeHtml(item.email)}</p>
-            </div>
-          `).join('')
-          : '<div class="item"><p>لا توجد اشتراكات بعد.</p></div>';
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    function fillForms() {
-      const home = contentData.home || {};
-      const book = contentData.book || {};
-      const about = contentData.about || {};
-      const socials = (contentData.contact && contentData.contact.socials) || {};
-
-      document.getElementById('homeMainQuote').value = home.mainQuote || '';
-      document.getElementById('homeIntroText').value = 
+        document.getElementById('newslette
