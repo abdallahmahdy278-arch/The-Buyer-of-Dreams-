@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>بائعة الأحلام</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <!-- خطوط عربية متنوعة -->
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@200..1000&family=Tajawal:wght@200;300;400;500;700;800;900&family=Reem+Kufi:wght@400..700&family=Lemonada:wght@300..700&family=Changa:wght@200..800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #FAF8F5;
-      --text: #1C1917;
-      --primary: #8B0000;
-      --gold: #D4AF37;
-      --muted: #78716C;
+      --bg: #faf8f5;
+      --text: #1c1917;
+      --primary: #8b0000;
+      --gold: #d4af37;
+      --muted: #78716c;
       --card: #fffdf9;
       --border: #e7dfd4;
-      --shadow: 0 10px 30px rgba(28,25,23,0.08);
+      --shadow: 0 10px 30px rgba(28,25,23,.08);
       --radius: 18px;
       --container: 1200px;
+
+      --site-font: "Tajawal", sans-serif;
+      --site-size: 1rem;
+      --site-color: #1c1917;
+      --site-line-height: 1.9;
     }
 
     * {
@@ -37,14 +42,21 @@
 
     body {
       background: var(--bg);
-      color: var(--text);
-      font-family: "Tajawal", sans-serif;
-      line-height: 1.9;
+      color: var(--site-color);
+      font-family: var(--site-font);
+      font-size: var(--site-size);
+      line-height: var(--site-line-height);
     }
 
     a {
       color: inherit;
       text-decoration: none;
+    }
+
+    button,
+    input,
+    textarea {
+      font-family: inherit;
     }
 
     img {
@@ -57,11 +69,15 @@
       margin: auto;
     }
 
+    /* =========================
+       HEADER
+    ========================= */
+
     .topbar {
       position: sticky;
       top: 0;
       z-index: 999;
-      background: rgba(250,248,245,0.92);
+      background: rgba(250,248,245,.94);
       backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
     }
@@ -118,8 +134,8 @@
     }
 
     .btn-primary:hover {
-      opacity: .92;
       transform: translateY(-1px);
+      opacity: .92;
     }
 
     .btn-outline {
@@ -133,8 +149,12 @@
       color: #fff;
     }
 
+    /* =========================
+       HERO
+    ========================= */
+
     .hero {
-      padding: 70px 0 40px;
+      padding: 70px 0 45px;
     }
 
     .hero-grid {
@@ -146,9 +166,9 @@
 
     .hero-text h1 {
       font-family: "Aref Ruqaa", serif;
-      font-size: clamp(2.2rem, 4vw, 4.2rem);
+      font-size: clamp(2.2rem,4vw,4.2rem);
       color: var(--primary);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       line-height: 1.4;
     }
 
@@ -158,8 +178,20 @@
       margin-bottom: 18px;
     }
 
+    .badge {
+      display: inline-block;
+      background: rgba(139,0,0,.08);
+      color: var(--primary);
+      border: 1px solid rgba(139,0,0,.15);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: .9rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
     .quote-box {
-      background: linear-gradient(180deg, #fffdf9, #f8f2e8);
+      background: linear-gradient(180deg,#fffdf9,#f8f2e8);
       padding: 24px;
       border-radius: var(--radius);
       border: 1px solid var(--border);
@@ -175,20 +207,15 @@
       left: 18px;
       font-size: 2rem;
       color: var(--gold);
-      opacity: 0.7;
+      opacity: .7;
     }
 
     .quote-main {
-      font-family: "Amiri", serif;
+      font-family: "Amiri",serif;
       font-size: 1.5rem;
       line-height: 2.1;
       padding-left: 18px;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
+      white-space: pre-line;
     }
 
     .hero-image-wrap {
@@ -198,8 +225,8 @@
     .hero-image {
       border-radius: 28px;
       overflow: hidden;
-      box-shadow: 0 30px 60px rgba(28,25,23,0.18);
-      border: 1px solid #e7dfd4;
+      box-shadow: 0 30px 60px rgba(28,25,23,.18);
+      border: 1px solid var(--border);
       min-height: 420px;
       background: #efe6da;
     }
@@ -207,23 +234,20 @@
     .hero-image img {
       width: 100%;
       height: 100%;
+      min-height: 420px;
       object-fit: cover;
     }
 
-    .hero-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, rgba(28,25,23,0.35), rgba(28,25,23,0.05));
-      border-radius: 28px;
-      pointer-events: none;
-    }
+    /* =========================
+       SECTIONS
+    ========================= */
 
     section {
       padding: 65px 0;
     }
 
     .section-title {
-      font-family: "Aref Ruqaa", serif;
+      font-family: "Aref Ruqaa",serif;
       font-size: 2.2rem;
       color: var(--primary);
       margin-bottom: 10px;
@@ -232,141 +256,65 @@
     .section-subtitle {
       color: var(--muted);
       margin-bottom: 28px;
-      font-size: 1rem;
     }
 
-    .cards {
+    /* =========================
+       THREE MAIN CARDS
+    ========================= */
+
+    .main-cards-section {
+      padding-top: 35px;
+    }
+
+    .main-cards {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3,1fr);
       gap: 22px;
     }
 
-    .card {
+    .main-card {
+      min-height: 250px;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: 22px;
       box-shadow: var(--shadow);
-      padding: 22px;
-    }
-
-    .book-card {
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: 24px;
-      align-items: center;
-    }
-
-    .book-cover {
-      perspective: 1200px;
-    }
-
-    .book-cover img {
-      border-radius: 10px;
-      transform: rotateY(-16deg);
-      box-shadow: -20px 20px 35px rgba(0,0,0,0.18);
-      border: 1px solid #d8c7aa;
-      background: #fff;
-    }
-
-    .book-details h3 {
-      font-family: "Aref Ruqaa", serif;
-      font-size: 2rem;
-      margin-bottom: 10px;
-      color: var(--primary);
-    }
-
-    .book-details p {
-      color: var(--muted);
-      margin-bottom: 18px;
-    }
-
-    .actions-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .poem-tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 22px;
-      flex-wrap: wrap;
-    }
-
-    .tab-btn {
-      padding: 10px 16px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #fff;
+      padding: 30px;
       cursor: pointer;
-      font-weight: 700;
-      color: var(--muted);
-    }
-
-    .tab-btn.active {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-    }
-
-    .poem-card h3,
-    .quote-card h3 {
-      color: var(--primary);
-      margin-bottom: 10px;
-      font-family: "Amiri", serif;
-      font-size: 1.5rem;
-    }
-
-    .meta {
-      color: var(--gold);
-      font-size: .95rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .poem-preview {
-      color: var(--muted);
-      white-space: pre-line;
-      min-height: 110px;
-    }
-
-    .quote-card {
       position: relative;
       overflow: hidden;
+      transition: .25s;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
     }
 
-    .quote-card::after {
-      content: "";
-      position: absolute;
-      top: -30px;
-      left: -30px;
-      width: 90px;
-      height: 90px;
-      background: rgba(212,175,55,0.15);
-      border-radius: 50%;
+    .main-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 18px 40px rgba(28,25,23,.13);
     }
 
-    .quote-text {
-      font-family: "Amiri", serif;
-      font-size: 1.35rem;
-      white-space: pre-line;
-      margin-bottom: 14px;
+    .main-card-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
     }
 
-    .copy-btn {
-      background: #fff;
-      border: 1px solid var(--border);
+    .main-card h2 {
+      font-family: "Aref Ruqaa",serif;
       color: var(--primary);
-      padding: 10px 14px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 8px;
     }
 
-    .about-box,
-    .contact-box,
-    .featured-box,
-    .media-box {
+    .main-card p {
+      color: var(--muted);
+    }
+
+    /* =========================
+       FEATURED
+    ========================= */
+
+    .featured-box {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -374,20 +322,235 @@
       padding: 28px;
     }
 
-    .featured-box .quote-main {
-      font-size: 1.3rem;
+    /* =========================
+       PAGE VIEWS
+    ========================= */
+
+    .page-view {
+      display: none;
+      min-height: 70vh;
+      padding: 60px 0;
     }
 
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
+    .page-view.active {
+      display: block;
     }
 
-    .contact-grid {
+    .back-btn {
+      margin-bottom: 25px;
+    }
+
+    /* =========================
+       BOOK
+    ========================= */
+
+    .book-intro {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 30px;
+    }
+
+    .book-title-big {
+      font-family: "Aref Ruqaa",serif;
+      color: var(--primary);
+      font-size: 2.8rem;
+      margin-bottom: 12px;
+    }
+
+    .chapters-list {
       display: grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 24px;
+      gap: 15px;
+    }
+
+    .chapter-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .chapter-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .chapter-card h3 {
+      color: var(--primary);
+      font-family: "Aref Ruqaa",serif;
+      font-size: 1.5rem;
+    }
+
+    .chapter-card p {
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .chapter-reading {
+      display: none;
+      background: #fdfaf5;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .chapter-reading.active {
+      display: block;
+    }
+
+    .chapter-reading-title {
+      color: var(--primary);
+      font-family: "Aref Ruqaa",serif;
+      font-size: 2.3rem;
+      margin-bottom: 20px;
+    }
+
+    .chapter-reading-body {
+      white-space: pre-line;
+      font-size: 1.35rem;
+      line-height: 2.4;
+    }
+
+    .chapter-video {
+      margin-top: 30px;
+    }
+
+    .chapter-video iframe {
+      width: 100%;
+      min-height: 450px;
+      border: 0;
+      border-radius: 18px;
+    }
+
+    /* =========================
+       POEMS
+    ========================= */
+
+    .poem-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .poem-item {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 20px;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .poem-item:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .poem-item h3 {
+      color: var(--primary);
+      font-family: "Aref Ruqaa",serif;
+      font-size: 1.6rem;
+    }
+
+    .poem-reading {
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .poem-reading.active {
+      display: block;
+    }
+
+    .poem-reading-title {
+      color: var(--primary);
+      font-family: "Aref Ruqaa",serif;
+      font-size: 2.5rem;
+    }
+
+    .poem-reason {
+      background: #f7f0e6;
+      border-right: 4px solid var(--gold);
+      padding: 18px;
+      margin: 20px 0;
+      color: var(--muted);
+      white-space: pre-line;
+    }
+
+    .poem-body {
+      white-space: pre-line;
+      font-size: 1.4rem;
+      line-height: 2.5;
+    }
+
+    /* =========================
+       QUOTES
+    ========================= */
+
+    .quote-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .quote-item {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 25px;
+      box-shadow: 0 5px 20px rgba(28,25,23,.04);
+    }
+
+    .quote-item h3 {
+      color: var(--primary);
+      font-family: "Aref Ruqaa",serif;
+      margin-bottom: 8px;
+    }
+
+    .quote-item p {
+      font-family: "Amiri",serif;
+      font-size: 1.35rem;
+      white-space: pre-line;
+    }
+
+    /* =========================
+       ABOUT
+    ========================= */
+
+    .about-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 40px;
+    }
+
+    .about-content {
+      white-space: pre-line;
+      color: var(--muted);
+      font-size: 1.15rem;
+      line-height: 2.3;
+    }
+
+    /* =========================
+       CONTACT
+    ========================= */
+
+    .contact-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 35px;
+      max-width: 850px;
+      margin: auto;
     }
 
     .form-group {
@@ -398,165 +561,131 @@
       display: block;
       font-weight: 700;
       margin-bottom: 8px;
-      color: var(--text);
     }
 
-    input, textarea {
+    textarea {
       width: 100%;
-      padding: 14px 16px;
+      min-height: 220px;
+      padding: 16px;
       border-radius: 14px;
       border: 1px solid var(--border);
       background: #fff;
+      resize: vertical;
       font-family: inherit;
       font-size: 1rem;
     }
 
-    textarea {
-      min-height: 140px;
-      resize: vertical;
+    /* =========================
+       SOCIAL
+    ========================= */
+
+    .social-footer {
+      padding: 20px 0;
     }
 
     .social-links {
       display: flex;
-      gap: 12px;
+      justify-content: center;
+      gap: 14px;
       flex-wrap: wrap;
-      margin-top: 16px;
     }
 
-    .social-links a {
-      padding: 10px 14px;
+    .social-link {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: #fff;
       border: 1px solid var(--border);
-      border-radius: 999px;
       color: var(--primary);
-      font-weight: 700;
+      font-weight: 800;
+      font-size: 1.2rem;
+      transition: .2s;
     }
 
-    .media-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
+    .social-link:hover {
+      background: var(--primary);
+      color: #fff;
+      transform: translateY(-2px);
     }
 
-    .media-item iframe,
-    .media-item img {
-      width: 100%;
-      border: 0;
-      border-radius: 16px;
-      min-height: 300px;
-      background: #eee;
-    }
+    /* =========================
+       FOOTER
+    ========================= */
 
     .footer {
-      padding: 30px 0 45px;
+      padding: 20px 0 40px;
       color: var(--muted);
-      border-top: 1px solid var(--border);
       text-align: center;
+      border-top: 1px solid var(--border);
     }
 
-    .reading-modal {
+    /* =========================
+       MODAL
+    ========================= */
+
+    .modal {
       position: fixed;
       inset: 0;
-      background: rgba(28,25,23,0.65);
+      background: rgba(28,25,23,.68);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 5000;
       padding: 20px;
+      z-index: 5000;
     }
 
-    .reading-modal.active {
+    .modal.active {
       display: flex;
     }
 
-    .reading-content {
-      width: min(900px, 100%);
+    .modal-content {
+      width: min(900px,100%);
       max-height: 90vh;
       overflow-y: auto;
       background: #fdfaf5;
       border-radius: 24px;
-      padding: 28px;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.28);
-      border: 1px solid #e8decf;
+      padding: 30px;
+      position: relative;
     }
 
-    .reading-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 14px;
-      align-items: start;
-      margin-bottom: 20px;
-    }
-
-    .reading-title {
-      color: var(--primary);
-      font-family: "Aref Ruqaa", serif;
-      font-size: 2rem;
-    }
-
-    .reading-meta {
-      color: var(--gold);
-      font-weight: 700;
-      margin-top: 6px;
-    }
-
-    .close-modal {
-      border: 0;
-      background: var(--primary);
-      color: white;
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      left: 15px;
       width: 42px;
       height: 42px;
       border-radius: 50%;
-      font-size: 1.1rem;
+      border: 0;
+      background: var(--primary);
+      color: white;
       cursor: pointer;
+      font-size: 1.3rem;
     }
 
-    .reading-body {
-      white-space: pre-line;
-      font-size: 1.4rem;
-      line-height: 2.4;
-      color: #2a2521;
-      padding-top: 10px;
-    }
+    /* =========================
+       RESPONSIVE
+    ========================= */
 
-    .empty-state {
-      text-align: center;
-      color: var(--muted);
-      padding: 30px;
-      border: 1px dashed var(--border);
-      border-radius: var(--radius);
-      background: rgba(255,255,255,0.6);
-    }
-
-    .badge {
-      display: inline-block;
-      background: rgba(139, 0, 0, 0.08);
-      color: var(--primary);
-      border: 1px solid rgba(139, 0, 0, 0.15);
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: .9rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    @media (max-width: 980px) {
-      .hero-grid,
-      .book-card,
-      .contact-grid,
-      .two-col,
-      .media-grid {
+    @media(max-width:900px) {
+      .hero-grid {
         grid-template-columns: 1fr;
       }
 
-      .cards {
-        grid-template-columns: 1fr 1fr;
+      .main-cards {
+        grid-template-columns: 1fr;
       }
     }
 
-    @media (max-width: 700px) {
-      .cards {
-        grid-template-columns: 1fr;
+    @media(max-width:600px) {
+      .nav {
+        justify-content: center;
+      }
+
+      .nav-links {
+        justify-content: center;
       }
 
       .brand {
@@ -567,262 +696,394 @@
         padding-top: 40px;
       }
 
-      .hero-text h1 {
+      .hero-image,
+      .hero-image img {
+        min-height: 300px;
+      }
+
+      .book-title-big {
         font-size: 2.2rem;
-      }
-
-      .quote-main {
-        font-size: 1.25rem;
-      }
-
-      .reading-body {
-        font-size: 1.2rem;
       }
     }
   </style>
 </head>
+
 <body>
-  <header class="topbar">
-    <div class="container nav">
-      <a href="#home" class="brand">بائعة الأحلام</a>
 
-      <nav class="nav-links">
-        <a href="#home">الرئيسية</a>
-        <a href="#book">الكتاب</a>
-        <a href="#poems">القصائد</a>
-        <a href="#quotes">المقتطفات</a>
-        <a href="#about">عن الكاتب</a>
-        <a href="#contact">تواصل</a>
-        <a href="/admin.html" class="btn btn-outline">لوحة التحكم</a>
-      </nav>
+<header class="topbar">
+  <div class="container nav">
+
+    <a href="#home" class="brand">بائعة الأحلام</a>
+
+    <nav class="nav-links">
+      <a href="#home">الرئيسية</a>
+      <a href="#book">الكتاب</a>
+      <a href="#poems">القصائد</a>
+      <a href="#quotes">المقتطفات</a>
+      <a href="#about">عن الكاتب</a>
+      <a href="#contact">تواصل</a>
+      <a href="/admin.html" class="btn btn-outline">لوحة التحكم</a>
+    </nav>
+
+  </div>
+</header>
+
+<main>
+
+<!-- =========================
+     HOME
+========================= -->
+
+<section class="hero" id="home">
+
+  <div class="container hero-grid">
+
+    <div class="hero-text">
+
+      <span class="badge">الموقع الأدبي الشخصي</span>
+
+      <h1>
+        كلمات تُكتب لتبقى…<br>
+        وأحلام تُروى لتولد من جديد
+      </h1>
+
+      <div class="quote-box">
+        <div id="heroQuote" class="quote-main">
+          جاري تحميل الاقتباس الرئيسي...
+        </div>
+      </div>
+
+      <p id="heroIntro">
+        جاري تحميل النص التعريفي...
+      </p>
+
     </div>
-  </header>
 
-  <main>
-    <section class="hero" id="home">
-      <div class="container hero-grid">
-        <div class="hero-text">
-          <span class="badge">الموقع الأدبي الشخصي</span>
-          <h1>كلمات تُكتب لتبقى…<br>وأحلام تُروى لتولد من جديد</h1>
+    <div class="hero-image-wrap">
 
-          <div class="quote-box">
-            <div id="heroQuote" class="quote-main">جاري تحميل الاقتباس الرئيسي...</div>
-          </div>
-
-          <p id="heroIntro">
-            هنا تُفتح أبواب الحنين على مهل، وتجلس القصيدة في ضوءٍ هادئ بين كتابٍ قديمٍ وقلبٍ لا يزال يؤمن بالكلمات.
-          </p>
-
-          <div class="hero-actions">
-            <a href="#book" class="btn btn-primary">اكتشف الكتاب</a>
-            <a href="#poems" class="btn btn-outline">اقرأ القصائد</a>
-          </div>
-        </div>
-
-        <div class="hero-image-wrap">
-          <div class="hero-image">
-            <img id="heroImage" src="https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=1200&auto=format&fit=crop" alt="صورة الغلاف الشاعري">
-          </div>
-          <div class="hero-overlay"></div>
-        </div>
+      <div class="hero-image">
+        <img
+          id="heroImage"
+          src=""
+          alt="الصورة الرئيسية"
+        >
       </div>
-    </section>
 
-    <section>
-      <div class="container">
-        <div class="featured-box">
-          <h2 class="section-title">مقتطف اليوم</h2>
-          <p class="section-subtitle">كلمة واحدة قد تفتح بابًا لا يغلقه النسيان.</p>
-          <div id="featuredQuote" class="quote-main">جاري تحميل مقتطف اليوم...</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="book">
-      <div class="container">
-        <h2 class="section-title">كتاب بائعة الأحلام</h2>
-        <p class="section-subtitle">النسخة الأدبية والنبذة وروابط الوصول.</p>
-
-        <div class="card book-card">
-          <div class="book-cover">
-            <img id="bookCover" src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=900&auto=format&fit=crop" alt="غلاف الكتاب">
-          </div>
-
-          <div class="book-details">
-            <h3 id="bookTitle">بائعة الأحلام</h3>
-            <p id="bookDescription">جاري تحميل نبذة الكتاب...</p>
-
-            <div class="actions-row">
-              <a id="buyPrintLink" href="#" target="_blank" class="btn btn-primary">الحصول على النسخة الورقية</a>
-              <a id="downloadPdfLink" href="#" target="_blank" class="btn btn-outline">تحميل النسخة الإلكترونية / PDF</a>
-            </div>
-
-            <div style="margin-top: 22px;">
-              <iframe
-                id="bookPdfViewer"
-                src=""
-                style="width:100%; min-height:420px; border:1px solid var(--border); border-radius:16px; background:#fff;"
-                title="عارض ملف الكتاب"
-              ></iframe>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="poems">
-      <div class="container">
-        <h2 class="section-title">الدواوين والقصائد</h2>
-        <p class="section-subtitle">قصائد مصنفة بين الشعر العمودي والشعر الحر/التفعيلة.</p>
-
-        <div class="poem-tabs">
-          <button class="tab-btn active" data-filter="all">الكل</button>
-          <button class="tab-btn" data-filter="عمودي">شعر عمودي</button>
-          <button class="tab-btn" data-filter="حر">شعر حر / تفعيلة</button>
-        </div>
-
-        <div id="poemsGrid" class="cards"></div>
-      </div>
-    </section>
-
-    <section id="quotes">
-      <div class="container">
-        <h2 class="section-title">مقتطفات وأبيات متفرقة</h2>
-        <p class="section-subtitle">أبيات وخواطر سريعة بصياغة أنيقة وسهلة المشاركة.</p>
-
-        <div id="quotesGrid" class="cards"></div>
-      </div>
-    </section>
-
-    <section id="about">
-      <div class="container two-col">
-        <div class="about-box">
-          <h2 class="section-title">عن الكاتب</h2>
-          <p class="section-subtitle">سيرة ذاتية أدبية تعكس المسيرة والهوية الإبداعية.</p>
-          <div id="aboutContent" style="white-space: pre-line; color: var(--muted); font-size: 1.08rem;">
-            جاري تحميل السيرة الأدبية...
-          </div>
-        </div>
-
-        <div class="media-box">
-          <h2 class="section-title">وسائط مختارة</h2>
-          <p class="section-subtitle">صور وفيديوهات قابلة للعرض داخل الموقع.</p>
-          <div id="mediaGrid" class="media-grid"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact">
-      <div class="container contact-grid">
-        <div class="contact-box">
-          <h2 class="section-title">تواصل</h2>
-          <p class="section-subtitle">أرسل رسالة أو اشترك في النشرة البريدية.</p>
-
-          <form id="contactForm">
-            <div class="form-group">
-              <label for="name">الاسم</label>
-              <input id="name" name="name" type="text" placeholder="اكتب اسمك" required />
-            </div>
-
-            <div class="form-group">
-              <label for="email">البريد الإلكتروني</label>
-              <input id="email" name="email" type="email" placeholder="example@email.com" required />
-            </div>
-
-            <div class="form-group">
-              <label for="message">الرسالة</label>
-              <textarea id="message" name="message" placeholder="اكتب رسالتك هنا..." required></textarea>
-            </div>
-
-            <button class="btn btn-primary" type="submit">إرسال الرسالة</button>
-            <p id="contactStatus" style="margin-top: 12px; color: var(--muted);"></p>
-          </form>
-        </div>
-
-        <div class="contact-box">
-          <h2 class="section-title">النشرة والبصمة الاجتماعية</h2>
-          <p class="section-subtitle">تابع جديد القصائد والمقتطفات.</p>
-
-          <form id="newsletterForm">
-            <div class="form-group">
-              <label for="newsletterEmail">البريد الإلكتروني</label>
-              <input id="newsletterEmail" type="email" placeholder="بريدك للاشتراك" required />
-            </div>
-
-            <button class="btn btn-outline" type="submit">اشتراك</button>
-            <p id="newsletterStatus" style="margin-top: 12px; color: var(--muted);"></p>
-          </form>
-
-          <div class="social-links" id="socialLinks">
-            <a href="#" target="_blank">فيسبوك</a>
-            <a href="#" target="_blank">إنستجرام</a>
-            <a href="#" target="_blank">يوتيوب</a>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <div class="container">
-      <p>© <span id="year"></span> بائعة الأحلام — جميع الحقوق محفوظة.</p>
     </div>
-  </footer>
 
-  <div class="reading-modal" id="readingModal">
-    <div class="reading-content">
-      <div class="reading-header">
-        <div>
-          <h3 id="modalPoemTitle" class="reading-title"></h3>
-          <div id="modalPoemMeta" class="reading-meta"></div>
-        </div>
-        <button class="close-modal" id="closeModal">×</button>
-      </div>
-      <div id="modalPoemBody" class="reading-body"></div>
-    </div>
   </div>
 
-  <script>
-    let siteData = null;
-    let activePoemFilter = "all";
+</section>
 
-    const fontMap = {
-      "Amiri": "'Amiri', serif",
-      "Aref Ruqaa": "'Aref Ruqaa', serif",
-      "Cairo": "'Cairo', sans-serif",
-      "Tajawal": "'Tajawal', sans-serif",
-      "Reem Kufi": "'Reem Kufi', sans-serif",
-      "Lemonada": "'Lemonada', cursive",
-      "Changa": "'Changa', sans-serif",
-      "Scheherazade New": "'Amiri', serif"
-    };
 
-    async function fetchData() {
-      try {
-        const res = await fetch('/api/content');
-        siteData = await res.json();
-        renderAll();
-      } catch (err) {
-        console.error(err);
-      }
-    }
+<!-- =========================
+     THREE CARDS
+========================= -->
 
-    function renderAll() {
-      if (!siteData) return;
+<section class="main-cards-section">
 
-      document.getElementById('year').textContent = new Date().getFullYear();
+  <div class="container">
 
-      renderHome();
-      renderBook();
-      renderPoems();
-      renderQuotes();
-      renderAbout();
-      renderMedia();
-      renderSocialLinks();
-    }
+    <div class="main-cards">
 
-    function renderHome() {
-      const home = siteData.home || {};
-      document.getElementById('heroQuote').textContent = home.mainQuote || 'لا يوجد اقتباس رئيسي بعد.';
-      document.getElementById('heroIntro').textContent = home.introText || 'مرحبًا بك في الموقع الأدبي.';
-      document.getElementById('heroImage').src = home.
+      <div class="main-card" onclick="openPage('book')">
+
+        <div class="main-card-icon">📖</div>
+
+        <h2>كتاب بائعة الأحلام</h2>
+
+        <p>
+          اقرأ الكتاب وفصوله كاملة.
+        </p>
+
+      </div>
+
+
+      <div class="main-card" onclick="openPage('poems')">
+
+        <div class="main-card-icon">✒️</div>
+
+        <h2>القصائد</h2>
+
+        <p>
+          تصفح القصائد واقرأ كل قصيدة كاملة.
+        </p>
+
+      </div>
+
+
+      <div class="main-card" onclick="openPage('quotes')">
+
+        <div class="main-card-icon">❝</div>
+
+        <h2>مقتطفات شعرية</h2>
+
+        <p>
+          كلمات وأبيات وخواطر مختارة.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     FEATURED QUOTE
+========================= -->
+
+<section>
+
+  <div class="container">
+
+    <div class="featured-box">
+
+      <h2 class="section-title">
+        مقتطف اليوم
+      </h2>
+
+      <p class="section-subtitle">
+        كلمة واحدة قد تفتح بابًا لا يغلقه النسيان.
+      </p>
+
+      <div id="featuredQuote" class="quote-main">
+        جاري تحميل مقتطف اليوم...
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     BOOK PAGE
+========================= -->
+
+<section id="book" class="page-view">
+
+  <div class="container">
+
+    <button
+      class="btn btn-outline back-btn"
+      onclick="goHome()"
+    >
+      ← العودة للرئيسية
+    </button>
+
+    <div class="book-intro">
+
+      <h1
+        id="bookPageTitle"
+        class="book-title-big"
+      >
+        كتاب بائعة الأحلام
+      </h1>
+
+      <p
+        id="bookPageDescription"
+        class="about-content"
+      >
+        جاري تحميل نبذة الكتاب...
+      </p>
+
+    </div>
+
+
+    <h2 class="section-title">
+      فصول الكتاب
+    </h2>
+
+    <div
+      id="chaptersList"
+      class="chapters-list"
+    ></div>
+
+
+    <div
+      id="chapterReading"
+      class="chapter-reading"
+    >
+
+      <button
+        class="btn btn-outline"
+        onclick="closeChapter()"
+      >
+        ← العودة إلى الفصول
+      </button>
+
+      <h2
+        id="chapterTitle"
+        class="chapter-reading-title"
+      ></h2>
+
+      <div
+        id="chapterBody"
+        class="chapter-reading-body"
+      ></div>
+
+      <div
+        id="chapterVideo"
+        class="chapter-video"
+      ></div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     POEMS PAGE
+========================= -->
+
+<section id="poems" class="page-view">
+
+  <div class="container">
+
+    <button
+      class="btn btn-outline back-btn"
+      onclick="goHome()"
+    >
+      ← العودة للرئيسية
+    </button>
+
+    <h1 class="section-title">
+      القصائد
+    </h1>
+
+    <p class="section-subtitle">
+      اختر القصيدة التي تريد قراءتها.
+    </p>
+
+    <div
+      id="poemList"
+      class="poem-list"
+    ></div>
+
+
+    <div
+      id="poemReading"
+      class="poem-reading"
+    >
+
+      <button
+        class="btn btn-outline"
+        onclick="closePoem()"
+      >
+        ← العودة إلى القصائد
+      </button>
+
+      <h2
+        id="poemReadingTitle"
+        class="poem-reading-title"
+      ></h2>
+
+      <div
+        id="poemReason"
+        class="poem-reason"
+      ></div>
+
+      <div
+        id="poemBody"
+        class="poem-body"
+      ></div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     QUOTES PAGE
+========================= -->
+
+<section id="quotes" class="page-view">
+
+  <div class="container">
+
+    <button
+      class="btn btn-outline back-btn"
+      onclick="goHome()"
+    >
+      ← العودة للرئيسية
+    </button>
+
+    <h1 class="section-title">
+      مقتطفات شعرية
+    </h1>
+
+    <p class="section-subtitle">
+      مقتطفات مختارة من الكلمات والخواطر.
+    </p>
+
+    <div
+      id="quotesList"
+      class="quote-list"
+    ></div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     ABOUT
+========================= -->
+
+<section id="about">
+
+  <div class="container">
+
+    <div class="about-box">
+
+      <h2 class="section-title">
+        عن الكاتب
+      </h2>
+
+      <p class="section-subtitle">
+        السيرة الأدبية والهوية الإبداعية.
+      </p>
+
+      <div
+        id="aboutContent"
+        class="about-content"
+      >
+        جاري تحميل السيرة الأدبية...
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     CONTACT
+========================= -->
+
+<section id="contact">
+
+  <div class="container">
+
+    <div class="contact-box">
+
+      <h2 class="section-title">
+        أرسل الرسالة لمشتري الأحلام
+      </h2>
+
+      <p class="section-subtitle">
+        اكتب رسالتك، وستصل إلى مشتري الأحلام دون الكشف عن هويتك.
+      </p>
+
+      <form id="contactForm">
+
+  
