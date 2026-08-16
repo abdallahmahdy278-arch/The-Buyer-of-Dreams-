@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>بائعة الأحلام</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@200..1000&family=Tajawal:wght@200;300;400;500;700;800;900&family=Reem+Kufi:wght@400..700&family=Lemonada:wght@300..700&family=Changa:wght@200..800&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    :root {
+      --bg: #faf8f5;
+      --text: #1c1917;
+      --primary: #8b0000;
+      --gold: #d4af37;
+      --muted: #78716c;
+      --card: #fffdf9;
+      --border: #e7dfd4;
+      --shadow: 0 10px 30px rgba(28, 25, 23, 0.08);
+
+      --body-font: "Tajawal", sans-serif;
+      --title-font: "Aref Ruqaa", serif;
+
+      --body-size: 18px;
+      --title-size: 36px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body-font);
+      font-size: var(--body-size);
+      line-height: 1.9;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    button,
+    input,
+    textarea {
+      font-family: inherit;
+    }
+
+    .container {
+      width: min(92%, 1200px);
+      margin: auto;
+    }
+
+    /* =========================
+       NAVBAR
+    ========================== */
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(250, 248, 245, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      color: var(--primary);
+      font-family: var(--title-font);
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      font-weight: 700;
+      transition: 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    /* =========================
+       BUTTONS
+    ========================== */
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      cursor: pointer;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* =========================
+       HERO
+    ========================== */
+
+    .hero {
+      padding: 75px 0 45px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 35px;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 7px 14px;
+      margin-bottom: 14px;
+      border-radius: 999px;
+      color: var(--primary);
+      background: rgba(139, 0, 0, 0.07);
+      border: 1px solid rgba(139, 0, 0, 0.15);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .hero-title {
+      color: var(--primary);
+      font-family: var(--title-font);
+      font-size: clamp(2.3rem, 5vw, 4.2rem);
+      line-height: 1.45;
+      margin-bottom: 20px;
+    }
+
+    .quote-box {
+      position: relative;
+      background: linear-gradient(
+        180deg,
+        #fffdf9,
+        #f8f2e8
+      );
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .quote-box::before {
+      content: "❝";
+      position: absolute;
+      top: 8px;
+      left: 18px;
+      color: var(--gold);
+      font-size: 2.4rem;
+      opacity: 0.7;
+    }
+
+    .hero-quote {
+      font-family: "Amiri", serif;
+      font-size: 1.5rem;
+      line-height: 2.1;
+      white-space: pre-line;
+    }
+
+    .hero-intro {
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .hero-image-wrap {
+      position: relative;
+    }
+
+    .hero-image {
+      width: 100%;
+      min-height: 430px;
+      overflow: hidden;
+      border-radius: 28px;
+      border: 1px solid var(--border);
+      background: #eee5d9;
+      box-shadow: 0 30px 60px rgba(28, 25, 23, 0.16);
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: 430px;
+      object-fit: cover;
+    }
+
+    /* =========================
+       SECTIONS
+    ========================== */
+
+    section {
+      padding: 65px 0;
+    }
+
+    .section-title {
+      color: var(--primary);
+      font-family: var(--title-font);
+      font-size: var(--title-size);
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .section-subtitle {
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    /* =========================
+       FEATURED
+    ========================== */
+
+    .featured-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .featured-text {
+      font-family: "Amiri", serif;
+      font-size: 1.5rem;
+      line-height: 2.2;
+      white-space: pre-line;
+    }
+
+    /* =========================
+       THREE MAIN CARDS
+    ========================== */
+
+    .main-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .main-card {
+      position: relative;
+      min-height: 220px;
+      padding: 30px;
+      border-radius: 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: 0.25s;
+      overflow: hidden;
+    }
+
+    .main-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 45px rgba(28, 25, 23, 0.13);
+    }
+
+    .main-card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+
+    .main-card h3 {
+      color: var(--primary);
+      font-family: var(--title-font);
+      font-size: 1.9rem;
+      margin-bottom: 10px;
+    }
+
+    .main-card p {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    /* =========================
+       PAGES
+    ========================== */
+
+    .content-page {
+      display: none;
+    }
+
+    .content-page.active {
+      display: block;
+    }
+
+    .back-button {
+      margin-bottom: 25px;
+    }
+
+    /* =========================
+       BOOK
+    ========================== */
+
+    .book-intro {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 25px;
+    }
+
+    .book-chapters {
+      display: grid;
+      gap: 15px;
+    }
+
+    .chapter-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      transition: 0.2s;
+    }
+
+    .chapter-card:hover {
+      border-color: var(--primary);
+    }
+
+    .chapter-card h3 {
+      color: var(--primary);
+      font-family: var(--title-font);
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+
+    .chapter-card p {
+      color: var(--muted);
+    }
+
+    .chapter-reader {
+      display: none;
+      margin-top: 20px;
+      background: #fdfaf5;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 30px;
+    }
+
+    .chapter-reader.active {
+      display: block;
+    }
+
+    .chapter-content {
+      white-space: pre-line;
+      font-family: "Amiri", serif;
+      font-size: 1.35rem;
+      line-height: 2.4;
+    }
+
+    .chapter-video {
+      margin-top: 30px;
+    }
+
+    .chapter-video iframe {
+      width: 100%;
+      min-height: 430px;
+      border: 0;
+      border-radius: 18px;
+    }
+
+    /* =========================
+       POEMS
+    ========================== */
+
+    .poems-list {
+      display: grid;
+      gap: 15px;
+    }
+
+    .poem-list-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .poem-list-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
+    .poem-list-card h3 {
+      color: var(--primary);
+      font-family: var(--title-font);
+      font-size: 1.7rem;
+    }
+
+    .poem-reason {
+      color: var(--muted);
+      margin-top: 8px;
+      white-space: pre-line;
+    }
+
+    .poem-reader {
+      display: none;
+      margin-top: 20px;
+      background: #fdfaf5;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 30px;
+    }
+
+    .poem-reader.active {
+      display: block;
+    }
+
+    .poem-reader-title {
+      color: var(--primary);
+      font-family: var(--title-font);
+      margin-bottom: 10px;
+      font-size: 2rem;
+    }
+
+    .poem-reader-reason {
+      color: var(--muted);
+      margin-bottom: 25px;
+      white-space: pre-line;
+    }
+
+    .poem-reader-content {
+      white-space: pre-line;
+      line-height: 2.5;
+    }
+
+    /* =========================
+       QUOTES
+    ========================== */
+
+    .quotes-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .quote-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .quote-card h3 {
+      color: var(--primary);
+      font-family: var(--title-font);
+      margin-bottom: 12px;
+    }
+
+    .quote-card-text {
+      white-space: pre-line;
+      line-height: 2.2;
+    }
+
+    /* =========================
+       ABOUT
+    ========================== */
+
+    .about-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 35px;
+      box-shadow: var(--shadow);
+      min-height: 300px;
+    }
+
+    .about-content {
+      color: var(--muted);
+      white-space: pre-line;
+      font-size: 1.1rem;
+      line-height: 2.2;
+    }
+
+    /* =========================
+       CONTACT
+    ========================== */
+
+    .contact-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 35px;
+      box-shadow: var(--shadow);
+    }
+
+    .contact-form {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      resize: vertical;
+      padding: 15px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .contact-status {
+      margin-top: 15px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* =========================
+       SOCIALS
+    ========================== */
+
+    .social-section {
+      padding: 25px 0 15px;
+      text-align: center;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 18px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--primary);
+      border-radius: 999px;
+      font-weight: 700;
+      transition: 0.2s;
+    }
+
+    .social-link:hover {
+      background: var(--primary);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .social-icon {
+      font-size: 1.2rem;
+    }
+
+    /* =========================
+       FOOTER
+    ========================== */
+
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 0 40px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* =========================
+       EMPTY / ERROR
+    ========================== */
+
+    .empty {
+      padding: 30px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      border-radius: 18px;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================== */
+
+    @media (max-width: 900px) {
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .main-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-image {
+        min-height: 350px;
+      }
+
+      .hero-image img {
+        height: 350px;
+      }
+    }
+
+    @media (max-width: 650px) {
+
+      .nav {
+        justify-content: center;
+      }
+
+      .nav-links {
+        justify-content: center;
+      }
+
+      .brand {
+        font-size: 1.7rem;
+      }
+
+      .hero {
+        padding-top: 40px;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .chapter-content,
+      .poem-reader-content {
+        font-size: 1.15rem;
+      }
+
+      .chapter-video iframe {
+        min-height: 240px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       NAVBAR
+  ========================== -->
+
+  <header class="topbar">
+    <div class="container nav">
+
+      <a href="#home" class="brand">
+        بائعة الأحلام
+      </a>
+
+      <nav class="nav-links">
+
+        <a href="#home">
+          الرئيسية
+        </a>
+
+        <a href="#mainCards">
+          الكتاب والقصائد
+        </a>
+
+        <a href="#about">
+          عن الكاتب
+        </a>
+
+        <a href="#contact">
+          تواصل
+        </a>
+
+        <a href="/admin.html" class="btn btn-outline">
+          لوحة التحكم
+        </a>
+
+      </nav>
+
+    </div>
+  </header>
+
+
+  <main>
+
+    <!-- =========================
+         HOME
+    ========================== -->
+
+    <section class="hero" id="home">
+
+      <div class="container hero-grid">
+
+        <div class="hero-text">
+
+          <span class="badge">
+            الموقع الأدبي الشخصي
+          </span>
+
+          <h1 class="hero-title">
+            كلمات تُكتب لتبقى…
+            <br>
+            وأحلام تُروى لتولد من جديد
+          </h1>
+
+          <div class="quote-box">
+
+            <div
+              id="heroQuote"
+              class="hero-quote"
+            >
+              جاري تحميل الاقتباس الرئيسي...
+            </div>
+
+          </div>
+
+          <p
+            id="heroIntro"
+            class="hero-intro"
+          >
+            جاري تحميل النص التعريفي...
+          </p>
+
+        </div>
+
+
+        <div class="hero-image-wrap">
+
+          <div class="hero-image">
+
+            <img
+              id="heroImage"
+              src="https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=1200&auto=format&fit=crop"
+              alt="بائعة الأحلام"
+            >
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         FEATURED QUOTE
+    ========================== -->
+
+    <section>
+
+      <div class="container">
+
+        <div class="featured-box">
+
+          <h2 class="section-title">
+            مقتطف اليوم
+          </h2>
+
+          <p class="section-subtitle">
+            كلمة واحدة قد تفتح بابًا لا يغلقه النسيان.
+          </p>
+
+          <div
+            id="featuredQuote"
+            class="featured-text"
+          >
+            جاري تحميل مقتطف اليوم...
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         THREE MAIN CARDS
+    ========================== -->
+
+    <section id="mainCards">
+
+      <div class="container">
+
+        <h2 class="section-title">
+          عالم بائعة الأحلام
+        </h2>
+
+        <p class="section-subtitle">
+          اختر القسم الذي تريد الدخول إليه.
+        </p>
+
+
+        <div class="main-cards">
+
+
+          <!-- BOOK -->
+
+          <div
+            class="main-card"
+            onclick="openPage('bookPage')"
+          >
+
+            <div class="main-card-icon">
+              📖
+            </div>
+
+            <h3>
+              كتاب بائعة الأحلام
+            </h3>
+
+            <p>
+              اقرأ الكتاب وفصوله التي تُضاف وتُدار من لوحة التحكم.
+            </p>
+
+          </div>
+
+
+          <!-- POEMS -->
+
+          <div
+            class="main-card"
+            onclick="openPage('poemsPage')"
+          >
+
+            <div class="main-card-icon">
+              ✒️
+            </div>
+
+            <h3>
+              القصائد
+            </h3>
+
+            <p>
+              مجموعة القصائد والدواوين مرتبة بطريقة سهلة للقراءة.
+            </p>
+
+          </div>
+
+
+          <!-- QUOTES -->
+
+          <div
+            class="main-card"
+            onclick="openPage('quotesPage')"
+          >
+
+            <div class="main-card-icon">
+              ❝
+            </div>
+
+            <h3>
+              مقتطفات شعرية
+            </h3>
+
+            <p>
+              أبيات وخواطر قصيرة تُعرض في بطاقات بسيطة.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         BOOK PAGE
+    ========================== -->
+
+    <section
+      id="bookPage"
+      class="content-page"
+    >
+
+      <div class="container">
+
+        <button
+          class="btn btn-outline back-button"
+          onclick="goHome()"
+        >
+          ← العودة
+        </button>
+
+
+        <h2 class="section-title">
+          كتاب بائعة الأحلام
+        </h2>
+
+
+        <div class="book-intro">
+
+          <h3
+            id="bookTitle"
+            class="section-title"
+          >
+            كتاب بائعة الأحلام
+          </h3>
+
+          <p
+            id="bookDescription"
+            style="white-space: pre-line;"
+          >
+            جاري تحميل نبذة الكتاب...
+          </p>
+
+        </div>
+
+
+        <h2 class="section-title">
+          فصول الكتاب
+        </h2>
+
+
+        <div
+          id="chaptersList"
+          class="book-chapters"
+        >
+        </div>
+
+
+        <div
+          id="chapterReader"
+          class="chapter-reader"
+        >
+
+          <h2
+            id="chapterReaderTitle"
+            class="section-title"
+          >
+          </h2>
+
+          <div
+            id="chapterReaderContent"
+            class="chapter-content"
+          >
+          </div>
+
+
+          <div
+            id="chapterVideo"
+            class="chapter-video"
+          >
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         POEMS PAGE
+    ========================== -->
+
+    <section
+      id="poemsPage"
+      class="content-page"
+    >
+
+      <div class="container">
+
+        <button
+          class="btn btn-outline back-button"
+          onclick="goHome()"
+        >
+          ← العودة
+        </button>
+
+
+        <h2 class="section-title">
+          القصائد
+        </h2>
+
+        <p class="section-subtitle">
+          اختر القصيدة التي تريد قراءتها.
+        </p>
+
+
+        <div
+          id="poemsList"
+          class="poems-list"
+        >
+        </div>
+
+
+        <div
+          id="poemReader"
+          class="poem-reader"
+        >
+
+          <h2
+            id="poemReaderTitle"
+            class="poem-reader-title"
+          >
+          </h2>
+
+
+          <div
+            id="poemReaderReason"
+            class="poem-reader-reason"
+          >
+          </div>
+
+
+          <div
+            id="poemReaderContent"
+            class="poem-reader-content"
+          >
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         QUOTES PAGE
+    ========================== -->
+
+    <section
+      id="quotesPage"
+      class="content-page"
+    >
+
+      <div class="
