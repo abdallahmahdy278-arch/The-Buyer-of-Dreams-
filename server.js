@@ -7,8 +7,29 @@ const express = require('express');
 const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 
-// تهيئة Firebase Admin (تأكد من إعداد متغيرات البيئة أو ملف الـ Service Account)
-initializeApp();
+// تهيئة Firebase Admin بمرونة لتعمل مع Render أو محلياً
+if (process.env.FIREBASE_CONFIG) {
+    try {
+        const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+        initializeApp({
+            credential: cert(serviceAccount)
+        });
+    } catch (e) {
+        console.error("فشل تحليل متغير FIREBASE_CONFIG:", e);
+        initializeApp();
+    }
+} else {
+    try {
+        // محاولة القراءة من المسار السري في Render
+        initializeApp({
+            credential: cert(require('/etc/secrets/firebase-key.json'))
+        });
+    } catch (e) {
+        // التشغيل الافتراضي كخيار أخير
+        initializeApp();
+    }
+}
+
 const db = getFirestore();
 
 const ROOT = __dirname;
