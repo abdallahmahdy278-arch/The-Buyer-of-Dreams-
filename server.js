@@ -1,22 +1,22 @@
 /**
- * بائعة الأحلام — الخادم الرئيسي
- * Express + ملفات JSON كقاعدة بيانات + حماية لوحة التحكم بكلمة مرور من متغير البيئة ADMIN_PASSWORD
+ * بائعة الأحلام — الخادم الرئيسي (مربوط بـ Firebase Firestore)
  */
 const path = require('path');
-const fs = require('fs');
 const crypto = require('crypto');
 const express = require('express');
+const { initializeApp, cert } = require('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore');
+
+// تهيئة Firebase Admin (تأكد من إعداد متغيرات البيئة أو ملف الـ Service Account)
+initializeApp();
+const db = getFirestore();
 
 const ROOT = __dirname;
-const DATA_DIR = path.join(ROOT, 'data');
-const CONTENT_FILE = path.join(DATA_DIR, 'content.json');
-const MESSAGES_FILE = path.join(DATA_DIR, 'messages.json');
-
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const PORT = process.env.PORT || 3000;
 
 /* ------------------------------------------------------------------ */
-/* المحتوى الافتراضي (يُنشأ تلقائيًا عند أول تشغيل)                    */
+/* المحتوى الافتراضي                                                   */
 /* ------------------------------------------------------------------ */
 const DEFAULT_CONTENT = {
   site: {
@@ -133,31 +133,49 @@ const DEFAULT_CONTENT = {
 };
 
 /* ------------------------------------------------------------------ */
-/* إدارة ملفات البيانات                                                */
+/* دوال التعامل مع Firestore                                            */
 /* ------------------------------------------------------------------ */
-function ensureDataFiles() {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  if (!fs.existsSync(CONTENT_FILE)) writeJSON(CONTENT_FILE, DEFAULT_CONTENT);
-  if (!fs.existsSync(MESSAGES_FILE)) writeJSON(MESSAGES_FILE, []);
-}
-
-function readJSON(file, fallback) {
-  try {
-    return JSON.parse(fs.readFileSync(file, 'utf8'));
-  } catch (e) {
-    return fallback;
+async function getContentFromDB() {
+  const docRef = db.collection('settings').doc('content');
+  const docSnap = await docRef.get();
+  if (!docSnap.exists) {
+    await docRef.set(DEFAULT_CONTENT);
+    return DEFAULT_CONTENT;
   }
+  return docSnap.data();
 }
 
-function writeJSON(file, data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf8');
+async function saveContentToDB(data) {
+  const docRef = db.collection('settings').doc('content');
+  await docRef.set(data);
+}
+
+async function getMessagesFromDB() {
+  const snapshot = await db.collection('messages').orderBy('createdAt', 'desc').get();
+  let messages = [];
+  snapshot.forEach(doc => {
+    messages.push({ id: doc.id, ...doc.data() });
+  });
+  return messages;
+}
+
+async function addMessageToDB(msgData) {
+  await db.collection('messages').add(msgData);
+}
+
+async function updateMessageInDB(id, updateData) {
+  await db.collection('messages').doc(id).update(updateData);
+}
+
+async function deleteMessageFromDB(id) {
+  await db.collection('messages').doc(id).delete();
 }
 
 /* ------------------------------------------------------------------ */
-/* المصادقة: رمز جلسة آمن بدلًا من كلمة المرور في الواجهة              */
+/* المصادقة: رمز جلسة آمن                                             */
 /* ------------------------------------------------------------------ */
 let tokens = new Set();
-let attempts = {}; // حماية من التخمين المتكرر
+let attempts = {};
 
 function issueToken() {
   const t = crypto.randomBytes(32).toString('hex');
@@ -194,7 +212,6 @@ const app = express();
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-/* تقديم صفحتي الموقع ولوحة التحكم فقط (لا يُكشف مجلد البيانات أبدًا) */
 app.get('/', (req, res) => res.sendFile(path.join(ROOT, 'index.html')));
 app.get('/index.html', (req, res) => res.sendFile(path.join(ROOT, 'index.html')));
 app.get('/admin.html', (req, res) => res.sendFile(path.join(ROOT, 'admin.html')));
@@ -235,54 +252,76 @@ app.get('/api/me', (req, res) => {
 });
 
 /* ------------------------------ المحتوى ---------------------------- */
-app.get('/api/content', (req, res) => {
-  res.json(readJSON(CONTENT_FILE, DEFAULT_CONTENT));
+app.get('/api/content', async (req, res) => {
+  try {
+    const content = await getContentFromDB();
+    res.json(content);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'خطأ في جلب المحتوى' });
+  }
 });
 
-app.put('/api/content', requireAdmin, (req, res) => {
+app.put('/api/content', requireAdmin, async (req, res) => {
   const c = req.body;
   if (!c || typeof c !== 'object') return res.status(400).json({ error: 'بيانات غير صالحة' });
-  writeJSON(CONTENT_FILE, c);
-  res.json({ ok: true });
+  try {
+    await saveContentToDB(c);
+    res.json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'خطأ في حفظ المحتوى' });
+  }
 });
 
 /* ------------------------------ الرسائل ---------------------------- */
-app.get('/api/messages', requireAdmin, (req, res) => {
-  const list = readJSON(MESSAGES_FILE, []);
-  res.json({ messages: list, unread: list.filter((m) => !m.read).length });
+app.get('/api/messages', requireAdmin, async (req, res) => {
+  try {
+    const list = await getMessagesFromDB();
+    res.json({ messages: list, unread: list.filter((m) => !m.read).length });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'خطأ في جلب الرسائل' });
+  }
 });
 
-app.post('/api/messages', (req, res) => {
+app.post('/api/messages', async (req, res) => {
   const { name, message } = req.body || {};
   if (!message || !String(message).trim()) {
     return res.status(400).json({ error: 'يرجى كتابة الرسالة أولًا' });
   }
-  const list = readJSON(MESSAGES_FILE, []);
-  list.unshift({
-    id: crypto.randomBytes(8).toString('hex'),
-    name: (name && String(name).trim()) || 'زائر مجهول',
-    message: String(message).trim(),
-    read: false,
-    createdAt: new Date().toISOString()
-  });
-  writeJSON(MESSAGES_FILE, list);
-  res.json({ ok: true });
+  try {
+    await addMessageToDB({
+      name: (name && String(name).trim()) || 'زائر مجهول',
+      message: String(message).trim(),
+      read: false,
+      createdAt: new Date().toISOString()
+    });
+    res.json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'خطأ في إرسال الرسالة' });
+  }
 });
 
-app.patch('/api/messages/:id', requireAdmin, (req, res) => {
-  const list = readJSON(MESSAGES_FILE, []);
-  const item = list.find((m) => m.id === req.params.id);
-  if (!item) return res.status(404).json({ error: 'الرسالة غير موجودة' });
-  item.read = true;
-  writeJSON(MESSAGES_FILE, list);
-  res.json({ ok: true });
+app.patch('/api/messages/:id', requireAdmin, async (req, res) => {
+  try {
+    await updateMessageInDB(req.params.id, { read: true });
+    res.json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'خطأ في تحديث الرسالة' });
+  }
 });
 
-app.delete('/api/messages/:id', requireAdmin, (req, res) => {
-  let list = readJSON(MESSAGES_FILE, []);
-  list = list.filter((m) => m.id !== req.params.id);
-  writeJSON(MESSAGES_FILE, list);
-  res.json({ ok: true });
+app.delete('/api/messages/:id', requireAdmin, async (req, res) => {
+  try {
+    await deleteMessageFromDB(req.params.id);
+    res.json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'خطأ في حذف الرسالة' });
+  }
 });
 
 /* ------------------------------ 404 و الأخطاء ---------------------- */
@@ -293,7 +332,6 @@ app.use((err, req, res, next) => {
 });
 
 /* ------------------------------------------------------------------ */
-ensureDataFiles();
 app.listen(PORT, () => {
   console.log('بائعة الأحلام تعمل على المنفذ ' + PORT);
   console.log('الموقع:  http://localhost:' + PORT);
