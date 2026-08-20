@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>بائعة الأحلام — لوحة التحكم</title>
+<meta name="google-site-verification" content="lbu-K_ctUG_UnNtplW7TMyoLlybaM8QAAkhsG2ciWz4" />
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700&family=Cairo:wght@400;600;700&family=Reem+Kufi:wght@400;700&family=Lemonada:wght@400;700&family=Changa:wght@400;600;700&family=Scheherazade+New:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Serif+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700&family=Markazi+Text:wght@400;500;600;700&family=Readex+Pro:wght@400;500;600;700&family=El+Messiri:wght@400;500;600;700&family=Mada:wght@400;500;600;700&family=Marhey:wght@400;500;600;700&family=Lateef:wght@400;500;600;700&family=Harmattan:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
+<style>
+:root{--primary:#8B1A1A;--gold:#C9A227;--text:#3E3A39;--bg:#F7EFE0;--card:#FFFDF8;--base-font:'Tajawal',sans-serif;--heading-font:'Aref Ruqaa',serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--base-font);background:var(--bg);color:var(--text);line-height:1.8}
+button{cursor:pointer;font-family:inherit}
+input,select,textarea{font-family:inherit}
+.hidden{display:none!important}
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:var(--card);border:1px solid rgba(201,162,39,.5);border-radius:16px;box-shadow:0 12px 40px rgba(80,40,20,.14);padding:44px 38px;width:100%;max-width:400px;text-align:center}
+.login-box h1{font-family:var(--heading-font);color:var(--primary);font-size:30px;margin-bottom:6px}
+.login-box p{color:var(--gold);margin-bottom:24px}
+.login-box input{width:100%;border:1.5px solid #e8dcc0;border-radius:10px;padding:13px 16px;font-size:16px;margin-bottom:14px;outline:none;background:#fffdf8}
+.login-box input:focus{border-color:var(--primary)}
+.login-box button{width:100%;background:var(--primary);color:#FFF8EC;border:none;border-radius:30px;padding:13px;font-size:17px;font-weight:700}
+.login-box .err{color:#b31212;font-size:14px;min-height:20px;margin-bottom:6px}
+#panel{min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:#2c1a12;color:#e9dfc9;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:50}
+.topbar .t-title{font-family:var(--heading-font);font-size:22px;color:#ffe9a8}
+.topbar .t-left{display:flex;align-items:center;gap:14px}
+.badge{background:var(--gold);color:#2c1a12;border-radius:30px;padding:3px 14px;font-weight:700;font-size:14px}
+.topbar button{background:rgba(255,255,255,.1);color:#e9dfc9;border:1px solid rgba(201,162,39,.4);border-radius:30px;padding:7px 18px;font-size:14.5px}
+.topbar button:hover{background:rgba(201,162,39,.25)}
+.body-wrap{display:flex;flex:1}
+.tabs{width:210px;background:var(--card);border-left:1px solid #e8dcc0;padding:16px 10px;display:flex;flex-direction:column;gap:4px}
+.tabs button{background:none;border:none;border-radius:10px;padding:11px 14px;font-size:15px;font-weight:600;text-align:right;color:var(--text);transition:.2s}
+.tabs button:hover{background:rgba(139,26,26,.07);color:var(--primary)}
+.tabs button.active{background:var(--primary);color:#FFF8EC}
+.tab-content{flex:1;padding:28px 30px;max-width:1000px;overflow-x:auto}
+h2.sec-title{font-family:var(--heading-font);color:var(--primary);font-size:26px;margin-bottom:4px}
+p.sec-sub{color:var(--gold);margin-bottom:22px;font-size:14.5px}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:14px}
+.field label{display:block;font-size:13.5px;font-weight:700;color:var(--primary);margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;border:1.5px solid #e8dcc0;border-radius:9px;padding:10px 13px;font-size:15px;background:#fffdf8;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary)}
+.field textarea{resize:vertical;min-height:90px}
+.field input[type=color]{height:44px;padding:4px;cursor:pointer}
+
+/* Quill */
+.ql-container{font-size:16px;font-family:'Tajawal',sans-serif;min-height:250px;background:#fffdf8;border-bottom-left-radius:9px;border-bottom-right-radius:9px}
+.ql-toolbar{background:#fbf6ea;border-top-left-radius:9px;border-top-right-radius:9px;border-color:#e8dcc0 !important}
+.ql-container{border-color:#e8dcc0 !important}
+
+/* ===== بلوك القصيدة المضمن داخل محرر الفصل ===== */
+.poem-block{background:linear-gradient(145deg,#fffaf0,#fbf1dd);border:1px solid rgba(201,162,39,.55);border-radius:9px;padding:24px 18px;position:relative;margin:14px 0}
+.poem-block .pb-grip{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;background:rgba(201,162,39,.16);color:#8a6d1c;border-radius:6px;padding:6px 10px;font-size:13px}
+.poem-block .pb-grip button{background:none;border:1px solid rgba(201,162,39,.5);padding:3px 10px;border-radius:6px;font-size:13px;color:#8a6d1c}
+.poem-block .pb-grip button:hover{background:rgba(201,162,39,.3)}
+.poem-block .pb-title{font-family:var(--heading-font);color:var(--primary);text-align:center;font-size:20px;margin-bottom:6px}
+.poem-block .pb-bayt{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;direction:rtl;margin:0 auto 10px;max-width:700px}
+.poem-block .pb-bayt .pb-a{text-align:start;justify-self:start}
+.poem-block .pb-bayt .pb-sep{color:var(--gold);font-weight:700;justify-self:center;white-space:nowrap}
+.poem-block .pb-bayt .pb-b{text-align:end;justify-self:end}
+@media (max-width:540px){
+  .poem-block .pb-bayt{grid-template-columns:1fr;gap:4px;text-align:center;max-width:100%}
+  .poem-block .pb-bayt .pb-a,.poem-block .pb-bayt .pb-b{text-align:center;justify-self:stretch}
+  .poem-block .pb-bayt .pb-sep{justify-self:center}
+}
+
+.cp-row{margin-bottom:10px;background:#fbf6ea;border:1px solid #e8dcc0;border-radius:10px;padding:10px}
+.cp-grid{display:grid;grid-template-columns:1fr 64px 1fr auto;gap:8px;align-items:center}
+@media(max-width:640px){.cp-grid{grid-template-columns:1fr 70px 1fr}}
+.cp-grid input{border:1.5px solid #e8dcc0;border-radius:8px;padding:9px 12px;font-size:15px;background:#fffdf8;outline:none;font-family:inherit}
+.cp-grid input:focus{border-color:var(--primary)}
+.card{background:var(--card);border:1px solid rgba(201,162,39,.4);border-radius:14px;padding:22px 24px;margin-bottom:22px;box-shadow:0 4px 14px rgba(80,40,20,.06)}
+.card h3{font-family:var(--heading-font);color:var(--primary);font-size:20px;margin-bottom:14px}
+.btn{background:var(--primary);color:#FFF8EC;border:none;border-radius:30px;padding:10px 26px;font-size:15px;font-weight:700;transition:.2s}
+.btn:hover{background:#6f1414}
+.btn.gold{background:var(--gold);color:#2c1a12}
+.btn.gray{background:#e9e0cd;color:#5c4f3e}
+.btn.red{background:#a32626;color:#fff}
+.btn.small{padding:6px 14px;font-size:13.5px;border-radius:20px}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;justify-content:flex-start}
+/* مفتاح ON/OFF لقفل/فتح الفصل أو القصيدة */
+.switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.switch input{display:none}
+.switch .track{width:46px;height:24px;background:#cfcfcf;border-radius:24px;position:relative;transition:.25s}
+.switch .track::after{content:'';position:absolute;top:2px;inset-inline-start:2px;width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.25s}
+.switch input:checked + .track{background:var(--primary)}
+.switch input:checked + .track::after{inset-inline-start:auto;inset-inline-end:2px}
+.switch .lbl{font-size:13px;color:#5c4f3e;font-weight:700}
+.switch input:checked ~ .lbl{color:var(--primary)}
+
+.item-list{display:flex;flex-direction:column;gap:10px}
+.item{background:var(--card);border:1px solid #e8dcc0;border-radius:12px;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.item .it-main{display:flex;align-items:center;gap:12px;flex:1;min-width:180px}
+.item .it-title{font-weight:700;font-size:16px}
+.item .it-tag{font-size:12px;background:rgba(201,162,39,.16);color:#8a6d1c;border-radius:30px;padding:2px 10px}
+.item .it-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.move-btn{background:none;border:1px solid #d8cbaa;border-radius:8px;padding:4px 10px;font-size:14px;color:#6b5848}
+.move-btn:hover{background:rgba(201,162,39,.15)}
+.move-btn:disabled{opacity:.35;cursor:not-allowed}
+
+.msg-item{background:var(--card);border:1px solid #e8dcc0;border-radius:12px;padding:16px 20px;margin-bottom:12px}
+.msg-item.unread{border-color:var(--gold);background:#fffaf0;box-shadow:0 3px 12px rgba(201,162,39,.18)}
+.msg-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.msg-head .who{font-weight:700;color:var(--primary)}
+.msg-head .when{font-size:13px;color:#8a8578}
+.msg-head .state{font-size:12px;border-radius:30px;padding:2px 12px}
+.msg-head .state.new{background:var(--gold);color:#2c1a12}
+.msg-head .state.read{background:#e9e0cd;color:#6b5848}
+.msg-body{white-space:pre-wrap;background:#fbf6ea;border-radius:8px;padding:12px 16px;margin-bottom:10px;font-size:15px}
+.msg-actions{display:flex;gap:8px}
+
+#notifBar{display:none;background:#fdf3d7;border:1px solid var(--gold);color:#7a5f14;border-radius:10px;padding:12px 18px;margin-bottom:18px;font-weight:700}
+#notifBar.show{display:flex;align-items:center;gap:10px}
+
+#toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(130px);background:var(--primary);color:#FFF8EC;padding:13px 30px;border-radius:40px;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:300;transition:.35s;font-weight:500}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ===== نافذة اختيار القصيدة + بلوك مرجع القصيدة داخل المحرر ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(44,26,18,.55);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--card);border:1px solid rgba(201,162,39,.5);border-radius:14px;box-shadow:0 14px 44px rgba(0,0,0,.3);width:100%;max-width:520px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;border-bottom:1px solid #e8dcc0}
+.modal-head h3{font-family:var(--heading-font);color:var(--primary);font-size:18px;margin:0}
+.modal-close{background:none;border:none;font-size:22px;color:var(--primary);cursor:pointer;line-height:1;padding:2px 6px}
+.modal-list{overflow-y:auto;padding:12px}
+.modal-poem{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:right;background:#fbf6ea;border:1px solid #e8dcc0;border-radius:9px;padding:11px 14px;margin-bottom:8px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:.2s}
+.modal-poem:hover{background:rgba(201,162,39,.18);border-color:var(--gold)}
+.modal-poem .mp-type{font-size:12px;background:rgba(201,162,39,.16);color:#8a6d1c;border-radius:30px;padding:2px 10px;white-space:nowrap;font-weight:500}
+.ql-editor .poem-ref{display:flex;align-items:center;gap:8px;background:rgba(201,162,39,.13);border:1px dashed rgba(201,162,39,.7);border-radius:8px;padding:10px 16px;margin:8px 0;font-size:14px;color:#6b5848;direction:rtl;line-height:1.7}
+
+@media(max-width:820px){
+.body-wrap{flex-direction:column}
+.tabs{width:100%;flex-direction:row;flex-wrap:wrap;border-left:none;border-bottom:1px solid #e8dcc0;padding:10px}
+.tabs button{flex:1;min-width:130px;text-align:center;font-size:14px}
+.tab-content{padding:20px 16px}
+.topbar .t-title{font-size:18px}
+}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+<div class="login-box">
+<h1>بائعة الأحلام</h1>
+<p>لوحة التحكم</p>
+<input id="pwdInput" type="password" placeholder="كلمة المرور" autocomplete="current-password" />
+<div class="err" id="loginErr"></div>
+<button id="loginBtn">دخول</button>
+</div>
+</div>
+
+<div id="panel" class="hidden">
+<div class="topbar">
+<div class="t-title">✦ لوحة التحكم — بائعة الأحلام</div>
+<div class="t-left">
+<div id="msgBadge" class="badge hidden">🔔 جديدة</div>
+<a href="/" target="_blank" style="background:rgba(255,255,255,.1);color:#e9dfc9;border:1px solid rgba(201,162,39,.4);border-radius:30px;padding:7px 18px;font-size:14.5px;text-decoration:none">عرض الموقع</a>
+<button id="logoutBtn">تسجيل الخروج</button>
+</div>
+</div>
+<div class="body-wrap">
+<div class="tabs" id="tabs">
+<button data-tab="home" class="active">الرئيسية</button>
+<button data-tab="book">الكتاب</button>
+<button data-tab="poems">القصائد</button>
+<button data-tab="excerpts">المقتطفات الشعرية</button>
+<button data-tab="about">عن الكاتب</button>
+<button data-tab="contact">التواصل</button>
+<button data-tab="social">روابط التواصل</button>
+<button data-tab="theme">التخصيص البصري</button>
+</div>
+<div class="tab-content" id="tabContent"></div>
+</div>
+</div>
+
+<!-- ===== نافذة اختيار قصيدة للإدراج داخل الفصل ===== -->
+<div class="modal-overlay" id="poemPickerModal">
+<div class="modal-box">
+<div class="modal-head">
+<h3>اختر قصيدة للإدراج داخل الفصل</h3>
+<button class="modal-close" onclick="closePoemPicker()" title="إغلاق">✕</button>
+</div>
+<div class="modal-list" id="poemPickerList"></div>
+</div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script>
+const FONTS=["Amiri","Aref Ruqaa","Tajawal","Cairo","Reem Kufi","Lemonada","Changa","Scheherazade New","Noto Naskh Arabic","Noto Serif Arabic","Noto Kufi Arabic","Markazi Text","Readex Pro","El Messiri","Mada","Marhey","Lateef","Harmattan","IBM Plex Sans Arabic"];
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+let CONTENT=null, MESSAGES=[], TOKEN=localStorage.getItem('admin_token')||'', quillEditor=null;
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2400);}
+function uid(){return 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function authHeaders(extra){const h=Object.assign({'Content-Type':'application/json'},extra||{});if(TOKEN)h['Authorization']='Bearer '+TOKEN;return h;}
+async function api(path,opt){
+const r=await fetch(path,Object.assign({},opt,{headers:authHeaders(opt&&opt.headers)}));
+const j=await r.json().catch(()=>({}));
+if(r.status===401&&path!=='/api/messages'&&!path.includes('/api/login')){toast('انتهت الجلسة، سجّل الدخول مجددًا');showLogin();throw new Error('unauth');}
+return {status:r.status,body:j};
+}
+function fontOptions(sel,_v){return '<option value="">— اختر —</option>'+FONTS.map(f=>`<option value="${f}">${f}</option>`).join('');}
+
+/* ==== الجلسة ==== */
+async function checkAuth(){const {body}=await api('/api/me');if(body.authenticated){TOKEN=localStorage.getItem('admin_token')||'';enterPanel();}else showLogin();}
+function showLogin(){document.getElementById('loginScreen').classList.remove('hidden');document.getElementById('panel').classList.add('hidden');}
+function enterPanel(){document.getElementById('loginScreen').classList.add('hidden');document.getElementById('panel').classList.remove('hidden');loadAll();}
+document.getElementById('loginBtn').addEventListener('click',doLogin);
+document.getElementById('pwdInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+async function doLogin(){
+const pwd=document.getElementById('pwdInput').value;
+document.getElementById('loginErr').textContent='';
+const {status,body}=await api('/api/login',{method:'POST',body:JSON.stringify({password:pwd})});
+if(body.ok){if(body.token)localStorage.setItem('admin_token',body.token);TOKEN=body.token||localStorage.getItem('admin_token')||'';enterPanel();}
+else if(status===429)document.getElementById('loginErr').textContent=body.error||'حاول لاحقًا';
+else document.getElementById('loginErr').textContent='كلمة المرور غير صحيحة';
+}
+document.getElementById('logoutBtn').addEventListener('click',async()=>{await api('/api/logout',{method:'POST'});localStorage.removeItem('admin_token');TOKEN='';showLogin();});
+checkAuth();
+
+/* ==== تحميل البيانات ==== */
+async function loadAll(){
+try{
+const c=await api('/api/content');CONTENT=c.body;
+await loadMessages();
+switchTab('home');
+}catch(e){toast('تعذر تحميل البيانات');}
+}
+async function loadMessages(){
+const {body}=await api('/api/messages');
+MESSAGES=body.messages||[];
+const unread=body.unread||0;
+const badge=document.getElementById('msgBadge');
+badge.classList.toggle('hidden',unread===0);
+badge.textContent='🔔 رسالة جديدة من أحد زوار الموقع'+(unread>1?' ('+unread+')':'');
+}
+async function saveContent(){
+const {body}=await api('/api/content',{method:'PUT',body:JSON.stringify(CONTENT)});
+if(body.ok)toast('تم الحفظ بنجاح ✓');
+else toast(body.error||'خطأ في الحفظ');
+}
+
+/* ==== التبويبات ==== */
+document.getElementById('tabs').addEventListener('click',e=>{
+const b=e.target.closest('button');if(!b)return;switchTab(b.dataset.tab);
+});
+function switchTab(tab){
+document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+const fns={home:tabHome,book:tabBook,poems:tabPoems,excerpts:tabExcerpts,about:tabAbout,contact:tabContact,social:tabSocial,theme:tabTheme};
+(fns[tab]||tabHome)();
+}
+
+/* ==== الرئيسية ==== */
+function tabHome(){
+const h=CONTENT.hero,d=CONTENT.dailyExcerpt;
+document.getElementById('tabContent').innerHTML=
+`<h2 class="sec-title">الرئيسية</h2><p class="sec-sub">الاقتباس الرئيسي والصورة ومقتطف اليوم</p>
+<div class="card">
+<h3>العبارة الأدبية الرئيسية</h3>
+<div class="form-row">
+<div class="field"><label>العبارة</label><input id="hTagline" value="${esc(CONTENT.site.tagline)}"></div>
+<div class="field"><label>الخط</label><select id="hQuoteFont">${fontOptions('',h.quote.font).replace(`value="${h.quote.font}"`,`value="${h.quote.font}" selected`)}</select></div>
+<div class="field"><label>حجم الخط</label><input id="hQuoteSize" type="number" value="${h.quote.fontSize||26}"></div>
+<div class="field"><label>لون النص</label><input id="hQuoteColor" type="color" value="${h.quote.color||'#8B1A1A'}"></div>
+<div class="field"><label>تباعد الأسطر</label><input id="hQuoteLH" type="number" step="0.1" value="${h.quote.lineHeight||2}"></div>
+</div>
+<div class="field"><label>الاقتباس الرئيسي (النص)</label><textarea id="hQuoteText">${esc(h.quote.text)}</textarea></div>
+<div class="field"><label>رابط الصورة الرئيسية</label><input id="hImg" value="${esc(h.imageUrl)}"></div>
+<div class="row-actions"><button class="btn" onclick="saveHome()">حفظ تغييرات الرئيسية</button></div>
+</div>
+<div class="card">
+<h3>مقتطف اليوم</h3>
+<div class="field"><label>نص المقتطف</label><textarea id="dText">${esc(d.text)}</textarea></div>
+<div class="form-row">
+<div class="field"><label>الخط</label><select id="dFont">${fontOptions('',d.font).replace(`value="${d.font}"`,`value="${d.font}" selected`)}</select></div>
+<div class="field"><label>حجم الخط</label><input id="dSize" type="number" value="${d.fontSize||22}"></div>
+<div class="field"><label>لون النص</label><input id="dColor" type="color" value="${d.color||'#5C4033'}"></div>
+<div class="field"><label>تباعد الأسطر</label><input id="dLH" type="number" step="0.1" value="${d.lineHeight||2}"></div>
+</div>
+<div class="row-actions"><button class="btn" onclick="saveDaily()">حفظ مقتطف اليوم</button></div>
+</div>`;
+}
+function saveHome(){
+CONTENT.site.tagline=document.getElementById('hTagline').value;
+CONTENT.hero.quote.font=document.getElementById('hQuoteFont').value||CONTENT.hero.quote.font;
+CONTENT.hero.quote.fontSize=+document.getElementById('hQuoteSize').value;
+CONTENT.hero.quote.color=document.getElementById('hQuoteColor').value;
+CONTENT.hero.quote.lineHeight=+document.getElementById('hQuoteLH').value;
+CONTENT.hero.quote.text=document.getElementById('hQuoteText').value;
+CONTENT.hero.imageUrl=document.getElementById('hImg').value.trim();
+saveContent();
+}
+function saveDaily(){
+CONTENT.dailyExcerpt.text=document.getElementById('dText').value;
+CONTENT.dailyExcerpt.font=document.getElementById('dFont').value||CONTENT.dailyExcerpt.font;
+CONTENT.dailyExcerpt.fontSize=+document.getElementById('dSize').value;
+CONTENT.dailyExcerpt.color=document.getElementById('dColor').value;
+CONTENT.dailyExcerpt.lineHeight=+document.getElementById('dLH').value;
+saveContent();
+}
+
+/* ==== تبويب الكتاب ==== */
+function tabBook(){
+const b=CONTENT.book,bl=b.blurb,ds=b.defaultStyle;
+document.getElementById('tabContent').innerHTML=
+`<h2 class="sec-title">الكتاب</h2><p class="sec-sub">اسم الكتاب والنبذة والفصول وتنسيق النص</p>
+
+<div class="card">
+<h3>بيانات الكتاب</h3>
+<div class="field"><label>اسم الكتاب</label><input id="bkTitle" value="${esc(b.title)}"></div>
+<div class="field"><label>نبذة مختصرة عن الكتاب</label><textarea id="bkBlurb">${esc(bl.text)}</textarea></div>
+<div class="form-row">
+<div class="field"><label>خط النبذة</label><select id="bBlurbFont">${fontOptions('',bl.font).replace(`value="${bl.font}"`,`value="${bl.font}" selected`)}</select></div>
+<div class="field"><label>حجم النبذة</label><input id="bBlurbSize" type="number" value="${bl.fontSize||18}"></div>
+<div class="field"><label>لون النبذة</label><input id="bBlurbColor" type="color" value="${bl.color||'#3E3A39'}"></div>
+<div class="field"><label>تباعد النبذة</label><input id="bBlurbLH" type="number" step="0.1" value="${bl.lineHeight||1.9}"></div>
+</div>
+<div class="row-actions"><button class="btn" onclick="saveBookMeta()">حفظ بيانات الكتاب</button></div>
+</div>
+
+<div class="card">
+<h3>تنسيق نص الكتاب الافتراضي</h3>
+<p class="sec-sub" style="margin-top:-10px">يُطبق على كل الفصول، ويمكن لكل فصل تخصيص تنسيقه الخاص.</p>
+<div class="form-row">
+<div class="field"><label>خط النص</label><select id="stFont">${fontOptions('',ds.font).replace(`value="${ds.font}"`,`value="${ds.font}" selected`)}</select></div>
+<div class="field"><label>حجم النص</label><input id="stSize" type="number" value="${ds.fontSize||20}"></div>
+<div class="field"><label>لون النص</label><input id="stColor" type="color" value="${ds.color||'#33302E'}"></div>
+<div class="field"><label>خط العناوين</label><select id="stHeadFont">${fontOptions('',ds.headingFont).replace(`value="${ds.headingFont}"`,`value="${ds.headingFont}" selected`)}</select></div>
+<div class="field"><label>حجم العناوين</label><input id="stHeadSize" type="number" value="${ds.headingSize||28}"></div>
+<div class="field"><label>لون العناوين</label><input id="stHeadColor" type="color" value="${ds.headingColor||'#8B1A1A'}"></div>
+<div class="field"><label>تباعد الأسطر</label><input id="stLH" type="number" step="0.1" value="${ds.lineHeight||2.1}"></div>
+</div>
+<div class="row-actions"><button class="btn" onclick="saveBookStyle()">حفظ تنسيق الكتاب</button></div>
+</div>
+
+<div class="card">
+<h3>فصول الكتاب</h3>
+<div class="item-list" id="chaptersList">${renderChapters()}</div>
+<div class="row-actions"><button class="btn gold" onclick="newChapter()">+ إضافة فصل جديد</button></div>
+</div>
+
+<div class="-card hidden" id="chapterEditor">
+<h3 id="chEditTitle">تعديل الفصل</h3>
+<div class="field"><label>عنوان الفصل</label><input id="chTitle"></div>
+
+<div class="field"><label>نص الفصل (يمكنك التنسيق، التلوين، التوسيع، والمحاذاة لأي جزء بالنقر على النص واختيار ما تريد)</label>
+<div id="editor-container" style="background:#fffdf8;border-radius:9px;margin-bottom:10px"></div>
+<button type="button" class="btn gold small" onclick="openPoemPicker()">✚ إدراج قصيدة داخل هذا الفصل</button>
+<span style="font-size:12px;color:#8a8578;margin-inline-start:8px">القصيدة تُحفظ كبلوك مستقل بنفس تنسيق قسم القصائد</span>
+</div>
+
+<div class="field"><label>رابط فيديو YouTube (اختياري)</label><input id="chYt"></div>
+
+<details class="card" style="padding:18px">
+<summary style="cursor:pointer;font-weight:700;color:var(--primary);font-size:15px">تنسيق عام إضافي لهذا الفصل (اختياري)</summary>
+<div class="form-row" style="margin-top:14px">
+<div class="field"><label>خط النص العام</label><select id="chFont">${fontOptions('','')}</select></div>
+<div class="field"><label>حجم النص</label><input id="chSize" type="number"></div>
+<div class="field"><label>لون النص</label><input id="chColor" type="color" value="#33302E"></div>
+<div class="field"><label>خط العنوان</label><select id="chHeadFont">${fontOptions('','')}</select></div>
+<div class="field"><label>حجم العنوان</label><input id="chHeadSize" type="number"></div>
+<div class="field"><label>لون العنوان</label><input id="chHeadColor" type="color" value="#8B1A1A"></div>
+<div class="field"><label>تباعد الأسطر</label><input id="chLH" type="number" step="0.1"></div>
+</div>
+</details>
+
+<div style="margin-top:14px" class="field">
+<label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+<input type="checkbox" id="chLocked" style="width:18px;height:18px">
+<span style="font-weight:700;color:var(--primary);font-size:14.5px">قفل هذا الفصل أمام الزوار (يُخفى المحتوى تمامًا ويظهر لهم إشعار الإغلاق)</span>
+</label>
+</div>
+
+<div class="row-actions">
+<button class="btn" id="chSaveBtn" onclick="saveChapter()">حفظ الفصل</button>
+<button class="btn gray" onclick="cancelChapter()">إلغاء</button>
+</div>
+</div>`;
+}
+
+let editingChapterId=null;
+
+function initQuill(initialContent){
+const el=document.getElementById('editor-container');
+if(!el) return;
+if(!quillEditor){
+quillEditor = new Quill(el, {
+theme:'snow',
+modules:{
+toolbar:[
+[{header:[1,2,3,false]}],
+['bold','italic','underline','strike'],
+[{color:[]},{background:[]}],
+[{align:[]}],
+[{list:'ordered'},{list:'bullet'}],
+['clean']
+]
+}
+});
+}
+quillEditor.root.innerHTML = initialContent || '';
+}
+
+/* ===== بلوت مخصص لمرجع القصيدة — يمنع Quill من حذف البيانات عند الإدراج والحفظ ===== */
+const PoemRefBlock = Quill.import('blots/block/embed');
+class PoemRefBlockClass extends PoemRefBlock {
+  static create(value){
+    const node = super.create();
+    node.setAttribute('contenteditable','false');
+    node.setAttribute('data-poem-id', value.id);
+    node.classList.add('poem-ref');
+    node.innerHTML =
+      '<span style="font-size:18px">📜</span>'+
+      '<span style="font-weight:700;color:#8B1A1A">' + esc(value.title || 'قصيدة') + '</span>'+
+      '<span style="color:#8a6d1c;font-size:12px">إدراج قصيدة من المكتبة</span>';
+    return node;
+  }
+  static value(node){
+    return { id: node.getAttribute('data-poem-id'), title: (node.textContent || '').trim() };
+  }
+}
+PoemRefBlockClass.blotName = 'poemRef';
+PoemRefBlockClass.tagName = 'div';
+Quill.register(PoemRefBlockClass, true);
+
+/* ===== نافذة اختيار قصيدة للإدراج — قائمة فعلية بالقصائد الموجودة على الموقع ===== */
+function openPoemPicker(){
+  const ps = CONTENT.poems || [];
+  if(!ps.length){ toast('لا توجد قصائد بعد — أضف قصيدة من قسم «القصائد» أولًا'); return; }
+  document.getElementById('poemPickerList').innerHTML = ps.map(p =>
+    '<button type="button" class="modal-poem" onclick="pickPoem(\'' + p.id + '\')">' +
+      '<span style="font-weight:700">' + esc(p.title) + '</span>' +
+      '<span class="mp-type">' + (p.type === 'free' ? 'شعر حر' : 'شعر عمودي') + '</span>' +
+    '</button>'
+  ).join('');
+  document.getElementById('poemPickerModal').classList.add('show');
+}
+function closePoemPicker(){
+  document.getElementById('poemPickerModal').classList.remove('show');
+}
+window.pickPoem = function(id){
+  const p = (CONTENT.poems || []).find(x => x.id === id);
+  closePoemPicker();
+  if(!p) return;
+  insertPoemIntoEditor(p);
+};
+
+/* يُدرج مرجعًا حقيقيًا للقصيدة (بلوك يحمل data-poem-id) — الموقع يستبدله بنص القصيدة الكامل تلقائيًا */
+function insertPoemIntoEditor(poem){
+  if(!quillEditor){ return; }
+  const range = quillEditor.getSelection(true);
+  const index = range ? range.index : quillEditor.getLength();
+  quillEditor.insertEmbed(index, 'poemRef', { id: poem.id, title: poem.title }, 'user');
+  quillEditor.setSelection(index + 1, 0, 'silent');
+  toast('تم إدراج القصيدة داخل الفصل ✓');
+}
+
+function renderChapters(){
+return CONTENT.book.chapters.map((ch,i)=>{
+const locked=ch.locked===true;
+return `<div class="item">
+<div class="it-main">
+<span class="it-title">${esc(ch.title)}</span>
+${ch.youtubeUrl?'<span class="it-tag">🎬 فيديو</span>':''}
+${ch.style&&Object.keys(ch.style).length?'<span class="it-tag">تنسيق مخصص</span>':''}
+</div>
+<div class="it-actions">
+<label class="switch" title="فتح / قفل الفصل">
+<input type="checkbox" ${locked?'checked':''} onchange="toggleChLock(${i},this.checked)">
+<span class="track"></span><span class="lbl">${locked?'مغلق':'مفتوح'}</span>
+</label>
+<button class="move-btn" onclick="moveChapter(${i},-1)" ${i===0?'disabled':''}>▲</button>
+<button class="move-btn" onclick="moveChapter(${i},1)" ${i===CONTENT.book.chapters.length-1?'disabled':''}>▼</button>
+<button class="btn small gold" onclick="editChapter('${ch.id}')">تعديل</button>
+<button class="btn small red" onclick="delChapter('${ch.id}')">حذف</button>
+</div>
+</div>`;
+}).join('')||'<div class="empty">لا توجد فصول</div>';
+}
+window.toggleChLock=function(i,v){CONTENT.book.chapters[i].locked=v;saveContent();tabBook();};
+window.moveChapter=function(i,dir){const arr=CONTENT.book.chapters,j=i+dir;if(j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]];saveContent();tabBook();};
+window.newChapter=function(){
+editingChapterId=null;
+document.getElementById('chapterEditor').classList.remove('hidden');
+document.getElementById('chEditTitle').textContent='إضافة فصل جديد';
+document.getElementById('chTitle').value='';
+initQuill('');
+document.getElementById('chYt').value='';
+['chFont','chSize','chColor','chHeadFont','chHeadSize','chHeadColor','chLH'].forEach(id=>{
+const el=document.getElementById(id);
+if(!el) return;
+el.value = (id==='chColor')?'#33302E':(id==='chHeadColor')?'#8B1A1A':'';
+});
+document.getElementById('chLocked').checked=false;
+document.getElementById('chSaveBtn').textContent='إضافة الفصل';
+document.getElementById('chapterEditor').scrollIntoView({behavior:'smooth'});
+};
+window.editChapter=function(id){
+const ch=CONTENT.book.chapters.find(x=>x.id===id);if(!ch)return;
+editingChapterId=id;
+document.getElementById('chapterEditor').classList.remove('hidden');
+document.getElementById('chEditTitle').textContent='تعديل: '+ch.title;
+document.getElementById('chTitle').value=ch.title;
+initQuill(ch.content || '');
+document.getElementById('chYt').value=ch.youtubeUrl||'';
+const s=ch.style||{};
+document.getElementById('chFont').value=s.font||'';
+document.getElementById('chSize').value=s.fontSize||'';
+document.getElementById('chColor').value=s.color||'#33302E';
+document.getElementById('chHeadFont').value=s.headingFont||'';
+document.getElementById('chHeadSize').value=s.headingSize||'';
+document.getElementById('chHeadColor').value=s.headingColor||'#8B1A1A';
+document.getElementById('chLH').value=s.lineHeight||'';
+document.getElementById('chLocked').checked=(ch.locked===true);
+document.getElementById('chSaveBtn').textContent='حفظ التعديلات';
+document.getElementById('chapterEditor').scrollIntoView({behavior:'smooth'});
+};
+window.saveChapter=function(){
+/* ⭐ إصلاح: قراءة قيمة العنصر بالطريقة الصحيحة (كان السطر القديم مكسورًا) */
+const titleEl = document.getElementById('chTitle');
+const title = (titleEl ? titleEl.value : '').trim();
+if(!title){toast('يرجى كتابة عنوان الفصل');return;}
+const content = quillEditor ? quillEditor.root.innerHTML : '';
+const style={};
+if(document.getElementById('chFont').value) style.font = document.getElementById('chFont').value;
+if(document.getElementById('chSize').value) style.fontSize = +document.getElementById('chSize').value;
+style.color = document.getElementById('chColor').value==='#33302E' ? (CONTENT.book.defaultStyle.color||'#33302E') : document.getElementById('chColor').value;
+if(document.getElementById('chHeadFont').value) style.headingFont = document.getElementById('chHeadFont').value;
+if(document.getElementById('chHeadSize').value) style.headingSize = +document.getElementById('chHeadSize').value;
+style.headingColor = document.getElementById('chHeadColor').value==='#8B1A1A' ? (CONTENT.book.defaultStyle.headingColor||'#8B1A1A') : document.getElementById('chHeadColor').value;
+if(document.getElementById('chLH').value) style.lineHeight = +document.getElementById('chLH').value;
+const data={
+title, content,
+youtubeUrl: document.getElementById('chYt').value.trim(),
+style,
+locked: document.getElementById('chLocked').checked
+};
+if(editingChapterId){
+const ch=CONTENT.book.chapters.find(x=>x.id===editingChapterId);
+if(ch) Object.assign(ch,data);
+}else{
+data.id = uid();
+CONTENT.book.chapters.push(data);
+}
+saveContent();
+tabBook();
+};
+window.delChapter=function(id){
+if(!confirm('هل أنت متأكد من حذف هذا الفصل نهائيًا؟'))return;
+CONTENT.book.chapters = CONTENT.book.chapters.filter(x=>x.id!==id);
+saveContent(); tabBook();
+};
+window.cancelChapter=function(){document.getElementById('chapterEditor').classList.add('hidden');};
+window.saveBookMeta=function(){
+CONTENT.book.title = document.getElementById('bkTitle').value.trim();
+CONTENT.book.blurb.text = document.getElementById('bkBlurb').value;
+CONTENT.book.blurb.font = document.getElementById('bBlurbFont').value || CONTENT.book.blurb.font;
+CONTENT.book.blurb.fontSize = +document.getElementById('bBlurbSize').value;
+CONTENT.book.blurb.color = document.getElementById('bBlurbColor').value;
+CONTENT.book.blurb.lineHeight = +document.getElementById('bBlurbLH').value;
+saveContent();
+};
+window.saveBookStyle=function(){
+const ds = CONTENT.book.defaultStyle;
+ds.font = document.getElementById('stFont').value || ds.font;
+ds.fontSize = +document.getElementById('stSize').value || ds.fontSize;
+ds.color = document.getElementById('stColor').value;
+ds.headingFont = document.getElementById('stHeadFont').value || ds.headingFont;
+ds.headingSize = +document.getElementById('stHeadSize').value || ds.headingSize;
+ds.headingColor = document.getElementById('stHeadColor').value;
+ds.lineHeight = +document.getElementById('stLH').value || ds.lineHeight;
+saveContent();
+};
+
+/* ==== القصائد ==== */
+function tabPoems(){
+const ps=CONTENT.poems;
+const current=ps[ps.length-1]||{};
+document.getElementById('tabContent').innerHTML=
+`<h2 class="sec-title">القصائد</h2><p class="sec-sub">إضافة وتعديل وحذف القصائد</p>
+
+<div class="card">
+<h3>إضافة قصيدة جديدة</h3>
+<div class="form-row">
+<div class="field"><label>اسم القصيدة</label><input id="pTitle"></div>
+<div class="field"><label>نوع القصيدة</label><select id="pType" onchange="poemTypeChanged()"><option value="vertical">شعر عمودي</option><option value="free">شعر حر / تفعيلة</option></select></div>
+</div>
+<div class="field"><label>سبب كتابة القصيدة (يظهر قبل القصيدة)</label><textarea id="pReason"></textarea></div>
+
+<div id="coupletsWrap">
+<p class="sec-sub">نص القصيدة — الشعر العمودي: بيت بيت (الشطر الأيمن + الفاصل + الشطر الأيسر)</p>
+<div id="coupletsBox"></div>
+<div class="row-actions"><button class="btn gold small" onclick="addCoupletRow()">+ إضافة بيت جديد</button></div>
+</div>
+
+<div id="pContentWrap" class="hidden">
+<div class="field"><label>نص القصيدة — الصق القصيدة كاملة</label><textarea id="pContent" style="min-height:160px"></textarea></div>
+</div>
+
+<div class="form-row">
+<div class="field"><label>خط النص</label><select id="pFont">${fontOptions('',(current.style&&current.style.font)||'Amiri').replace(`value="${(current.style&&current.style.font)||'Amiri'}"`,`value="${(current.style&&current.style.font)||'Amiri'}" selected`)}</select></div>
+<div class="field"><label>حجم النص</label><input id="pSize" type="number" value="${(current.style&&current.style.fontSize)||22}"></div>
+<div class="field"><label>لون النص</label><input id="pColor" type="color" value="${(current.style&&current.style.color)||'#33302E'}"></div>
+<div class="field"><label>خط العنوان</label><select id="pHeadFont">${fontOptions('',(current.style&&current.style.headingFont)||'Aref Ruqaa').replace(`value="${(current.style&&current.style.headingFont)||'Aref Ruqaa'}"`,`value="${(current.style&&current.style.headingFont)||'Aref Ruqaa'}" selected`)}</select></div>
+<div class="field"><label>حجم العنوان</label><input id="pHeadSize" type="number" value="${(current.style&&current.style.headingSize)||30}"></div>
+<div class="field"><label>لون العنوان</label><input id="pHeadColor" type="color" value="${(current.style&&current.style.headingColor)||'#8B1A1A'}"></div>
+<div class="field"><label>تباعد الأسطر</label><input id="pLH" type="number" step="0.1" value="${(current.style&&current.style.lineHeight)||2.2}"></div>
+</div>
+<div class="row-actions">
+<button class="btn" id="pSaveBtn" onclick="savePoem()">إضافة القصيدة</button>
+<button class="btn gray" onclick="resetPoemForm()">تفريغ النموذج</button>
+</div>
+</div>
+
+<div class="card">
+<h3>القصائد الموجودة</h3>
+<div class="item-list" id="poemsList">${renderPoemsList()}</div>
+</div>`;
+resetCouplets(); poemTypeChanged();
+}
+let editingPoemId=null;
+function renderPoemsList(){
+return (CONTENT.poems||[]).map((p,i)=>{
+const locked=p.locked===true;
+return `<div class="item">
+<div class="it-main">
+<span class="it-title">${esc(p.title)}</span>
+</div>
+<div class="it-actions">
+<label class="switch">
+<input type="checkbox" ${locked?'checked':''} onchange="togglePoemLock(${i},this.checked)">
+<span class="track"></span><span class="lbl">${locked?'مغلقة':'مفتوحة'}</span>
+</label>
+<button class="move-btn" onclick="movePoem(${i},-1)" ${i===0?'disabled':''}>▲</button>
+<button class="move-btn" onclick="movePoem(${i},1)" ${i===CONTENT.poems.length-1?'disabled':''}>▼</button>
+<button class="btn small gold" onclick="editPoem('${p.id}')">تعديل</button>
+<button class="btn small red" onclick="delPoem('${p.id}')">حذف</button>
+</div>
+</div>`;
+}).join('')||'<div class="empty">لا توجد قصائد</div>';
+}
+window.togglePoemLock=function(i,v){CONTENT.poems[i].locked=v;saveContent();tabPoems();};
+window.movePoem=function(i,dir){const arr=CONTENT.poems,j=i+dir;if(j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]];saveContent();tabPoems();};
+window.poemTypeChanged=function(){
+const v=document.getElementById('pType').value;
+document.getElementById('coupletsWrap').classList.toggle('hidden',v!=='vertical');
+document.getElementById('pContentWrap').classList.toggle('hidden',v==='vertical');
+};
+window.addCoupletRow=function(){
+const row=document.createElement('div');
+row.className='cp-row';
+row.innerHTML=
+`<div class="cp-grid">
+<input class="cp-a" placeholder="الشطر الأول">
+<input class="cp-sep" placeholder="—">
+<input class="cp-b" placeholder="الشطر الثاني">
+<button class="btn small red" onclick="this.closest('.cp-row').remove()" title="حذف البيت">✕</button>
+</div>`;
+document.getElementById('coupletsBox').appendChild(row);
+};
+window.resetCouplets=function(){const box=document.getElementById('coupletsBox');if(box){box.innerHTML='';addCoupletRow();}};
+window.resetPoemForm=function(){
+editingPoemId=null;
+document.getElementById('pTitle').value='';
+document.getElementById('pReason').value='';
+document.getElementById('pContent').value='';
+document.getElementById('pType').value='vertical';
+resetCouplets(); poemTypeChanged();
+document.getElementById('pSaveBtn').textContent='إضافة القصيدة';
+};
+window.editPoem=function(id){
+const p=CONTENT.poems.find(x=>x.id===id);if(!p)return;
+editingPoemId=id;
+const s=p.style||{};
+document.getElementById('pTitle').value=p.title;
+document.getElementById('pType').value=p.type;
+document.getElementById('pReason').value=p.reason||'';
+document.getElementById('pContent').value=p.content||'';
+resetCouplets();
+if(Array.isArray(p.lines)&&p.lines.length){p.lines.forEach(l=>{addCoupletRow();const inputs=row=>row?[row.querySelector('.cp-a'),row.querySelector('.cp-sep'),row.querySelector('.cp-b')]:[];const row=document.getElementById('coupletsBox').lastChild;if(row){row.querySelector('.cp-a').value=l.a||'';row.querySelector('.cp-sep').value=l.sep||'';row.querySelector('.cp-b').value=l.b||'';}});}
+else if(p.type==='vertical'){addCoupletRow();}
+poemTypeChanged();
+document.getElementById('pFont').value=s.font||'';
+document.getElementById('pSize').value=s.fontSize||22;
+document.getElementById('pColor').value=s.color||'#33302E';
+document.getElementById('pHeadFont').value=s.headingFont||'';
+document.getElementById('pHeadSize').value=s.headingSize||30;
+document.getElementById('pHeadColor').value=s.headingColor||'#8B1A1A';
+document.getElementById('pLH').value=s.lineHeight||2.2;
+document.getElementById('pSaveBtn').textContent='حفظ التعديلات';
+document.getElementById('pContent').scrollIntoView({behavior:'smooth'});
+};
+window.savePoem=function(){
+const title=document.getElementById('pTitle').value.trim();
+if(!title){toast('يرجى كتابة اسم القصيدة');return;}
+const style={
+font:document.getElementById('pFont').value||'Amiri',
+fontSize:+document.getElementById('pSize').value||22,
+color:document.getElementById('pColor').value,
+headingFont:document.getElementById('pHeadFont').value||'Aref Ruqaa',
+headingSize:+document.getElementById('pHeadSize').value||30,
+headingColor:document.getElementById('pHeadColor').value,
+lineHeight:+document.getElementById('pLH').value||2.2
+};
+const type=document.getElementById('pType').value;
+let content='',lines=[];
+if(type==='vertical'){
+document.querySelectorAll('#coupletsBox .cp-row').forEach(r=>{
+const a=r.querySelector('.cp-a').value.trim();
+const b=r.querySelector('.cp-b').value.trim();
+const sep=r.querySelector('.cp-sep').value.trim();
+if(a||b)lines.push({a,sep,b});
+});
+if(!lines.length){toast('يرجى إدخال أبيات القصيدة');return;}
+}else{
+content=document.getElementById('pContent').value;
+if(!content.trim()){toast('يرجى كتابة نص القصيدة');return;}
+}
+const data={title,type,reason:document.getElementById('pReason').value,content,lines,style};
+if(editingPoemId){
+const p=CONTENT.poems.find(x=>x.id===editingPoemId);
+if(p){Object.assign(p,data);p.locked=p.locked===true;}
+}else{
+data.id=uid(); data.locked=false;
+CONTENT.poems.push(data);
+}
+saveContent(); tabPoems();
+};
+window.delPoem=function(id){
+if(!confirm('هل أنت متأكد من حذف هذه القصيدة نهائيًا؟'))return;
+CONTENT.poems=CONTENT.poems.filter(x=>x.id!==id);
+saveContent(); tabPoems();
+};
+
+/* ==== المقتطفات ==== */
+function tabExcerpts(){
+const es=CONTENT.excerpts;
+const current=es[es.length-1]||{};
+document.getElementById('tabContent').innerHTML=
+`<h2 class="sec-title">المقتطفات الشعرية</h2><p class="sec-sub">إضافة وتعديل وحذف وإعادة ترتيب المقتطفات. يمكنك إخفاء أي مقتطف مؤقتًا من الموقع دون حذفه.</p>
+<div class="card">
+<h3>إضافة مقتطف جديد</h3>
+<div class="field"><label>عنوان المقتطف (اختياري)</label><input id="eTitle"></div>
+<div class="field"><label>نص المقتطف</label><textarea id="eText"></textarea></div>
+<div class="form-row">
+<div class="field"><label>خط النص</label><select id="eFont">${fontOptions('',(current.style&&current.style.font)||'Scheherazade New').replace(`value="${(current.style&&current.style.font)||'Scheherazade New'}"`,`value="${(current.style&&current.style.font)||'Scheherazade New'}" selected`)}</select></div>
+<div class="field"><label>حجم النص</label><input id="eSize" type="number" value="${(current.style&&current.style.fontSize)||20}"></div>
+<div class="field"><label>لون الخط</label><input id="eColor" type="color" value="${(current.style&&current.style.color)||'#4A4036'}"></div>
+<div class="field"><label>خط العنوان</label><select id="eHeadFont">${fontOptions('',(current.style&&current.style.headingFont)||'Aref Ruqaa').replace(`value="${(current.style&&current.style.headingFont)||'Aref Ruqaa'}"`,`value="${(current.style&&current.style.headingFont)||'Aref Ruqaa'}" selected`)}</select></div>
+<div class="field"><label>حجم العنوان</label><input id="eHeadSize" type="number" value="${(current.style&&current.style.headingSize)||26}"></div>
+<div class="field"><label>لون العنوان</label><input id="eHeadColor" type="color" value="${(current.style&&current.style.headingColor)||'#8B1A1A'}"></div>
+<div class="field"><label>تباعد الأسطر</label><input id="eLH" type="number" step="0.1" value="${(current.style&&current.style.lineHeight)||2}"></div>
+</div>
+<div class="row-actions">
+<button class="btn" id="eSaveBtn" onclick="saveExcerpt()">إضافة المقتطف</button>
+<button class="btn gray" onclick="resetExcerptForm()">تفريغ النموذج</button>
+</div>
+</div>
+<div class="card"><h3>المقتطفات الموجودة</h3><div class="item-list" id="excerptsList">${renderExcerptsList()}</div></div>`;
+}
+let editingExcerptId=null;
+function renderExcerptsList(){
+return (CONTENT.excerpts||[]).map((e,i)=>{
+const hidden=e.hidden===true;
+return `<div class="item">
+<div class="it-main">
+<span class="it-title">${esc(e.title||'مقتطف بدون عنوان')}</span>
+${hidden?'<span class="it-tag" style="background:rgba(180,40,40,.18);color:#993333">مخفي</span>':''}
+</div>
+<div class="it-actions">
+<button class="btn small ${hidden?'gold':'gray'}" onclick="toggleExcerptHidden(${i})">${hidden?'إظهار':'إخفاء'}</button>
+<button class="move-btn" onclick="moveExcerpt(${i},-1)" ${i===0?'disabled':''}>▲</button>
+<button class="move-btn" onclick="moveExcerpt(${i},1)" ${i===CONTENT.excerpts.length-1?'disabled':''}>▼</button>
+<button class="btn small gold" onclick="editExcerpt('${e.id}')">تعديل</button>
+<button class="btn small red" onclick="delExcerpt('${e.id}')">حذف</button>
+</div>
+</div>`;
+}).join('')||'<div class="empty">لا توجد مقتطفات</div>';
+}
+window.toggleExcerptHidden=function(i){CONTENT.excerpts[i].hidden=CONTENT.excerpts[i].hidden===true?false:true;saveContent();tabExcerpts();toast(CONTENT.excerpts[i].hidden?'تم إخفاء المقتطف من الموقع ✓':'تم إظهار المقتطف في الموقع ✓');};
+window.moveExcerpt=function(i,dir){const arr=CONTENT.excerpts,j=i+dir;if(j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]];saveContent();tabExcerpts();};
+window.resetExcerptForm=function(){
+editingExcerptId=null;
+document.getElementById('eTitle').value='';
+document.getElementById('eText').value='';
+document.getElementById('eSaveBtn').textContent='إضافة المقتطف';
+};
+window.editExcerpt=function(id){
+const e=CONTENT.excerpts.find(x=>x.id===id);if(!e)return;
+editingExcerptId=id;
+const s=e.style||{};
+document.getElementById('eTitle').value=e.title||'';
+document.getElementById('eText').value=e.text;
+document.getElementById('eFont').value=s.font||'';
+document.getElementById('eSize').value=s.fontSize||20;
+document.getElementById('eColor').value=s.color||'#4A4036';
+document.getElementById('eHeadFont').value=s.headingFont||'';
+document.getElementById('eHeadSize').value=s.headingSize||26;
+document.getElementById('eHeadColor').value=s.headingColor||'#8B1A1A';
+document.getElementById('eLH').value=s.lineHeight||2;
+document.getElementById('eSaveBtn').textContent='حفظ التعديلات';
+document.getElementById('eText').scrollIntoView({behavior:'smooth'});
+};
+window.saveExcerpt=function(){
+const text=document.getElementById('eText').value.trim();
+if(!text){toast('يرجى كتابة نص المقتطف');return;}
+const style={
+font:document.getElementById('eFont').value||'Scheherazade New',
+fontSize:+document.getElementById('eSize').value||20,
+color:document.getElementById('eColor').value,
+headingFont:document.getElementById('eHeadFont').value||'Aref Ruqaa',
+headingSize:+document.getElementById('eHeadSize').value||26,
+headingColor:document.getElementById('eHeadColor').value,
+lineHeight:+document.getElementById('eLH').value||2
+};
+const data={title:document.getElementById('eTitle').value.trim(),text,style,hidden:false};
+if(editingExcerptId){
+const e=CONTENT.excerpts.find(x=>x.id===editingExcerptId);
+if(e){Object.assign(e,data);e.hidden=e.hidden===true;}
+}else{
+data.id=uid();
+CONTENT.excerpts.push(data);
+}
+saveContent(); tabExcerpts();
+};
+window.delExcerpt=function(id){
+if(!confirm('هل أنت متأكد من حذف هذا المقتطف نهائيًا؟'))return;
+CONTENT.excerpts=CONTENT.excerpts.filter(x=>x.id!==id);
+saveContent(); tabExcerpts();
+};
+
+/* ==== عن الكاتب ==== */
+function tabAbout(){
+const a=CONTENT.about;
+document.getElementById('tabContent').innerHTML=
+`<h2 class="sec-title">عن الكاتب</h2><p class="sec-sub">السيرة الذاتية الأدبية</p>
+<div class="card">
+<div class="field"><label>السيرة الذاتية</label><textarea id="aText" style="min-height:160px">${esc(a.text)}</textarea></div>
+<div class="form-row">
+<div class="field"><label>الخط</label><select id="aFont">${fontOptions('',a.font).replace(`value="${a.font}"`,`value="${a.font}" selected`)}</select></div>
+<div class="field"><label>حجم الخط</label><input id="aSize" type="number" value="${a.fontSize||18}"></div>
+<div class="field"><label>لون النص</label><input id="aColor" type="color" value="${a.color||'#3E3A39'}"></div>
+<div class="field"><label>تباعد الأسطر</label><input id="aLH" type="number" step="0.1" value="${a.lineHeight||2}"></div>
+</div>
+<div class="row-actions"><button class="btn" onclick="saveAbout()">حفظ السيرة</button></div>
+</div>`;
+}
+window.saveAbout=function(){
+CONTENT.about.text=document.getElementById('aText').value;
+CONTENT.about.font=document.getElementById('aFont').value||CONTENT.about.font;
+CONTENT.about.fontSize=+document.getElementById('aSize').value;
+CONTENT.about.color=document.getElementById('aColor').value;
+CONTENT.about.lineHeight=+document.getElementById('aLH').value;
+saveContent();
+};
+
+/* ==== التواصل ==== */
+function tabContact(){
+const unread=MESSAGES.filter(m=>!m.read).length;
+const notif = `<div id="notifBar" class="${unread?'show':''}" style="${unread?'display:flex':''}">🔔 رسالة جديدة من أحد زوار الموقع${unread>1?' ('+unread+' رسائل)':''}</div>`;
+const list = MESSAGES.length ? MESSAGES.map(m=>{
+const st = m.read?'مقروءة':'غير مقروءة';
+return `<div class="msg-item ${m.read?'':'unread'}">
+<div class="msg-head">
+<span class="who">💬 ${esc(m.name)}</span>
+<span class="when">${new Date(m.createdAt).toLocaleString('ar-EG')}</span>
+<span class="state ${m.read?'read':'new'}">${st}</span>
+</div>
+<div class="msg-body">${esc(m.message)}</div>
+<div class="msg-actions">
+${m.read?'':`<button class="btn small gold" onclick="markRead('${m.id}')">وضع كمقروءة</button>`}
+<button class="btn small red" onclick="delMsg('${m.id}')">حذف الرسالة</button>
+</div>
+</div>`;
+}).join('') : '<div class="empty">لا توجد رسائل بعد</div>';
+document.getElementById('tabContent').innerHTML=
+`<h2 class="sec-title">التواصل</h2><p class="sec-sub">رسائل الزوار</p>
+${notif}
+<div class="card"><h3>صندوق الرسائل</h3>${list}</div>`;
+}
+window.markRead=async function(id){await api('/api/messages/'+id,{method:'PATCH'});await loadMessages();tabContact();toast('تم تحديدها كمقروءة');};
+window.delMsg=async function(id){if(!confirm('هل أنت متأكد من حذف هذه الرسالة نهائيًا؟'))return;await api('/api/messages/'+id,{method:'DELETE'});await loadMessages();tabContact();toast('تم حذف الرسالة');};
+
+/* ==== روابط التواصل ==== */
+function tabSocial(){
+const s=CONTENT.social;
+document.getElementById('tabContent').innerHTML=
+`<h2 class="sec-title">روابط التواصل الاجتماعي</h2><p class="sec-sub">تظهر الأيقونات في الفوتر</p>
+<div class="card">
+<div class="field"><label>رابط YouTube</label><input id="sYt" value="${esc(s.youtube)}"></div>
+<div class="field"><label>رابط Instagram</label><input id="sIg" value="${esc(s.instagram)}"></div>
+<div class="field"><label>رابط Facebook</label><input id="sFb" value="${esc(s.facebook)}"></div>
+<div class="field"><label>رابط TikTok</label><input id="sTk" value="${esc(s.tiktok)}"></div>
+<div class="row-actions"><button class="btn" onclick="saveSocial()">حفظ الروابط</button></div>
+</div>`;
+}
+window.saveSocial=function(){
+CONTENT.social.youtube=document.getElementById('sYt').value.trim();
+CONTENT.social.instagram=document.getElementById('sIg').value.trim();
+CONTENT.social.facebook=document.getElementById('sFb').value.trim();
+CONTENT.social.tiktok=document.getElementById('sTk').value.trim();
+saveContent();
+};
+
+/* ==== التخصيص البصري ==== */
+function tabTheme(){
+const t=CONTENT.theme;
+document.getElementById('tabContent').innerHTML=
+`<h2 class="sec-title">التخصيص البصري</h2><p class="sec-sub">يُطبق مباشرة على الموقع الرئيسي</p>
+<div class="card">
+<div class="form-row">
+<div class="field"><label>اللون الأساسي</label><input id="tPrimary" type="color" value="${t.primaryColor}"></div>
+<div class="field"><label>اللون الذهبي</label><input id="tGold" type="color" value="${t.goldColor}"></div>
+<div class="field"><label>لون النص</label><input id="tText" type="color" value="${t.textColor}"></div>
+<div class="field"><label>لون الخلفية</label><input id="tBg" type="color" value="${t.bgColor}"></div>
+<div class="field"><label>لون البطاقات</label><input id="tCard" type="color" value="${t.cardColor}"></div>
+</div>
+<div class="form-row">
+<div class="field"><label>الخط الأساسي</label><select id="tBaseFont">${fontOptions('',t.baseFont).replace(`value="${t.baseFont}"`,`value="${t.baseFont}" selected`)}</select></div>
+<div class="field"><label>خط العناوين</label><select id="tHeadFont">${fontOptions('',t.headingFont).replace(`value="${t.headingFont}"`,`value="${t.headingFont}" selected`)}</select></div>
+<div class="field"><label>حجم النص العام</label><input id="tBaseSize" type="number" value="${t.baseSize}"></div>
+<div class="field"><label>حجم العناوين</label><input id="tHeadSize" type="number" value="${t.headingSize}"></div>
+</div>
+<div class="row-actions"><button class="btn" onclick="saveTheme()">حفظ التصميم</button></div>
+</div>`;
+}
+window.saveTheme=function(){
+CONTENT.theme.primaryColor=document.getElementById('tPrimary').value;
+CONTENT.theme.goldColor=document.getElementById('tGold').value;
+CONTENT.theme.textColor=document.getElementById('tText').value;
+CONTENT.theme.bgColor=document.getElementById('tBg').value;
+CONTENT.theme.cardColor=document.getElementById('tCard').value;
+CONTENT.theme.baseFont=document.getElementById('tBaseFont').value||CONTENT.theme.baseFont;
+CONTENT.theme.headingFont=document.getElementById('tHeadFont').value||CONTENT.theme.headingFont;
+CONTENT.theme.baseSize=+document.getElementById('tBaseSize').value;
+CONTENT.theme.headingSize=+document.getElementById('tHeadSize').value;
+saveContent();
+};
+</script>
+</body>
+</html>
